@@ -79,25 +79,25 @@ export default function PortfolioPage() {
   }
 
   return (
-    <div className="flex h-screen bg-slate-100 font-sans antialiased overflow-hidden selection:bg-indigo-500 selection:text-white">
+    <div className="flex h-screen bg-[#070b14] text-slate-100 font-sans overflow-hidden selection:bg-indigo-500 selection:text-white">
       {/* 1. LEFT SIDEBAR */}
       <Sidebar currentTab="portfolio" onSelectTab={handleSelectTab} />
 
       {/* 2. MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-gradient-to-b from-[#0a0f1d] via-[#070b14] to-[#04070e]">
         {/* TOP HEADER */}
         <Header onTriggerRefresh={handleRefresh} isRefreshing={isRefreshing} />
 
         {/* TOAST NOTIFICATION */}
         {toastMessage && (
-          <div className="bg-emerald-900/90 text-emerald-100 px-4 py-2.5 text-xs flex items-center justify-between border-b border-emerald-700/80 shadow-md animate-in slide-in-from-top duration-300">
+          <div className="bg-emerald-950/90 text-emerald-200 px-6 py-2.5 text-xs flex items-center justify-between border-b border-emerald-700/80 shadow-md animate-in slide-in-from-top duration-300">
             <div className="flex items-center gap-2 font-medium">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>{toastMessage}</span>
             </div>
             <button
               onClick={() => setToastMessage(null)}
-              className="text-emerald-300 hover:text-white text-xs underline font-semibold cursor-pointer"
+              className="text-emerald-400 hover:text-white text-xs underline font-semibold cursor-pointer"
             >
               Dismiss
             </button>
@@ -105,34 +105,34 @@ export default function PortfolioPage() {
         )}
 
         {/* SCROLLABLE PORTFOLIO VIEW */}
-        <main className="flex-1 overflow-y-auto p-6 lg:p-8 bg-slate-50 space-y-6">
+        <main className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6">
           
           {/* ========================================================================= */}
           {/* PAGE TITLE BAR                                                            */}
           {/* ========================================================================= */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 p-5 rounded-2xl border border-slate-800 backdrop-blur-sm shadow-xl">
             <div>
               <div className="flex items-center gap-2.5">
-                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                   Portfolio & Assets
                 </h1>
-                <span className="inline-flex items-center gap-1 text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   PORTFOLIO LIVE
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                Monitor asset allocation, portfolio exposure and capital distribution.
+              <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                Monitor asset allocation, portfolio exposure, expected return, risk contribution, and statutory liquidity buffers.
               </p>
             </div>
 
             {/* Right: Last Updated & Refresh */}
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <span className="text-[10px] uppercase font-mono text-slate-400 block font-semibold">
+                <span className="text-[10px] uppercase font-mono text-slate-500 block font-semibold">
                   Sync Status
                 </span>
-                <span className="text-xs font-mono font-semibold text-slate-700">
+                <span className="text-xs font-mono font-semibold text-slate-300">
                   Last updated: {lastUpdated}
                 </span>
               </div>
@@ -141,10 +141,10 @@ export default function PortfolioPage() {
                 type="button"
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className="px-3.5 py-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-lg border border-slate-200 shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                className="px-3.5 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                 title="Sync live asset prices & allocations"
               >
-                <RefreshCw className={`w-3.5 h-3.5 text-slate-500 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
+                <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${isRefreshing ? 'animate-spin text-cyan-400' : ''}`} />
                 <span>{isRefreshing ? 'Syncing...' : 'Refresh'}</span>
               </button>
             </div>

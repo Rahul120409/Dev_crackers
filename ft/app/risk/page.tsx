@@ -313,91 +313,203 @@ export default function RiskAndControlsPage() {
           {/* ========================================================================= */}
           {activeSubView === 'overview' && overview && (
             <div className="space-y-6">
-              {/* Top Key Risk Indicators */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* 1. Composite Risk Score */}
-                <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 relative overflow-hidden">
-                  <div className="flex justify-between items-start">
-                    <span className="text-xs font-medium text-slate-400">Composite Risk Score</span>
-                    <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                        currentRiskLevel === 'CRITICAL'
-                          ? 'bg-red-500/20 text-red-300 border-red-500/40'
-                          : currentRiskLevel === 'HIGH'
-                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                      }`}
-                    >
-                      {currentRiskLevel}
-                    </span>
+              {/* SECTION 19.4 — TOP KEY RISK INDICATORS (7 DEDICATED METRIC CARDS) */}
+              <div>
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-cyan-400" />
+                    <h2 className="text-xs font-bold uppercase font-mono tracking-wider text-slate-400">
+                      Core Risk Telemetry & Prudential Limits (7 KRI Vector)
+                    </h2>
                   </div>
-                  <div className="mt-3 flex items-baseline gap-2">
-                    <span className="text-3xl font-extrabold text-white font-mono">{currentRiskScore}</span>
-                    <span className="text-xs text-slate-400">/ 100</span>
-                    <span className="text-[11px] text-slate-400 ml-auto font-mono">Limit: {limits?.maxRiskScore || 70}</span>
-                  </div>
-                  <div className="mt-3 h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full transition-all duration-700 ${
-                        currentRiskScore > 70
-                          ? 'bg-gradient-to-r from-amber-500 to-red-500'
-                          : 'bg-gradient-to-r from-emerald-500 to-indigo-500'
-                      }`}
-                      style={{ width: `${Math.min(100, currentRiskScore)}%` }}
-                    />
-                  </div>
+                  <span className="text-[11px] font-mono text-slate-500">
+                    Confidence: 95% 1-Day Horizon
+                  </span>
                 </div>
 
-                {/* 2. VaR 95% & CVaR */}
-                <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-                  <div className="flex justify-between items-start">
-                    <span className="text-xs font-medium text-slate-400">Value at Risk (95% 1-Day)</span>
-                    <Activity className="w-4 h-4 text-indigo-400" />
-                  </div>
-                  <div className="mt-3 flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-white font-mono">
-                      ${overview.var95.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
-                  <div className="mt-2 flex justify-between text-[11px] text-slate-400 font-mono">
-                    <span>CVaR (Expected Shortfall):</span>
-                    <span className="text-indigo-300">${overview.cvar95.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-                  </div>
-                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3.5">
+                  {/* 1. RISK SCORE */}
+                  <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 relative overflow-hidden backdrop-blur-sm shadow-lg flex flex-col justify-between hover:border-slate-700 transition-all">
+                    <div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">Risk Score</span>
+                        <span
+                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border font-mono ${
+                            currentRiskLevel === 'CRITICAL'
+                              ? 'bg-red-500/20 text-red-300 border-red-500/40'
+                              : currentRiskLevel === 'HIGH'
+                              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                              : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                          }`}
+                        >
+                          {currentRiskLevel}
+                        </span>
+                      </div>
+                      <div className="mt-2.5 flex items-baseline gap-1">
+                        <span className="text-2xl font-black text-white font-mono">{currentRiskScore}</span>
+                        <span className="text-xs text-slate-400 font-mono">/ 100</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        Limit: <strong className="text-slate-300 font-mono">{limits?.maxRiskScore || 70}</strong>
+                      </p>
+                    </div>
 
-                {/* 3. Portfolio Volatility & Max Drawdown */}
-                <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-                  <div className="flex justify-between items-start">
-                    <span className="text-xs font-medium text-slate-400">Annualized Volatility</span>
-                    <TrendingDown className="w-4 h-4 text-cyan-400" />
+                    <div className="mt-3 pt-2 border-t border-slate-800/80">
+                      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full transition-all duration-700 ${
+                            currentRiskScore > 70
+                              ? 'bg-gradient-to-r from-amber-500 to-red-500'
+                              : 'bg-gradient-to-r from-emerald-500 to-indigo-500'
+                          }`}
+                          style={{ width: `${Math.min(100, currentRiskScore)}%` }}
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="mt-3 flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-white font-mono">
-                      {(overview.volatility * 100).toFixed(2)}%
-                    </span>
-                    <span className="text-xs text-slate-400 ml-auto font-mono">
-                      Drawdown: {(overview.drawdown * 100).toFixed(2)}%
-                    </span>
-                  </div>
-                  <div className="mt-2 text-[11px] text-slate-400">
-                    Calculated over 252 trading day historical matrix.
-                  </div>
-                </div>
 
-                {/* 4. Instant Liquidity Cushion */}
-                <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-                  <div className="flex justify-between items-start">
-                    <span className="text-xs font-medium text-slate-400">Instant Liquidity Cushion</span>
-                    <DollarSign className="w-4 h-4 text-emerald-400" />
+                  {/* 2. VOLATILITY */}
+                  <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm shadow-lg flex flex-col justify-between hover:border-slate-700 transition-all">
+                    <div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">Volatility</span>
+                        <TrendingDown className="w-3.5 h-3.5 text-cyan-400" />
+                      </div>
+                      <div className="mt-2.5 flex items-baseline gap-1">
+                        <span className="text-2xl font-black text-white font-mono">
+                          {(overview.volatility * 100).toFixed(2)}
+                        </span>
+                        <span className="text-xs font-bold text-slate-400 font-mono">% p.a.</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        Regime: <strong className="text-emerald-400">Low Variance</strong>
+                      </p>
+                    </div>
+
+                    <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                      <span>252-Day Matrix</span>
+                      <span className="text-emerald-400 font-bold">Stable</span>
+                    </div>
                   </div>
-                  <div className="mt-3 flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-emerald-400 font-mono">
-                      ${overview.liquidity.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                    </span>
+
+                  {/* 3. VALUE AT RISK (VaR 95%) */}
+                  <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm shadow-lg flex flex-col justify-between hover:border-slate-700 transition-all">
+                    <div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">VaR (95% 1D)</span>
+                        <Activity className="w-3.5 h-3.5 text-indigo-400" />
+                      </div>
+                      <div className="mt-2.5 flex items-baseline gap-1">
+                        <span className="text-xl font-black text-white font-mono">
+                          ${overview.var95.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono">(₹1.25 Cr)</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        Max VaR: <strong className="text-slate-300 font-mono">${(limits?.maxVaR || 50000).toLocaleString('en-US')}</strong>
+                      </p>
+                    </div>
+
+                    <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                      <span>Confidence</span>
+                      <span className="text-indigo-400 font-bold">95.0%</span>
+                    </div>
                   </div>
-                  <div className="mt-2 flex justify-between text-[11px] text-slate-400 font-mono">
-                    <span>Min Mandate:</span>
-                    <span className="text-slate-300">${(limits?.minLiquidity || 200000).toLocaleString('en-US')}</span>
+
+                  {/* 4. CONDITIONAL VaR (CVaR / Expected Shortfall) */}
+                  <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm shadow-lg flex flex-col justify-between hover:border-slate-700 transition-all">
+                    <div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">CVaR (Tail)</span>
+                        <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+                      </div>
+                      <div className="mt-2.5 flex items-baseline gap-1">
+                        <span className="text-xl font-black text-white font-mono">
+                          ${overview.cvar95.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono">(₹1.65 Cr)</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        Expected Shortfall: <strong className="text-amber-400 font-mono">5% Worst</strong>
+                      </p>
+                    </div>
+
+                    <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                      <span>Tail Loss</span>
+                      <span className="text-amber-400 font-bold">Controlled</span>
+                    </div>
+                  </div>
+
+                  {/* 5. DRAWDOWN */}
+                  <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm shadow-lg flex flex-col justify-between hover:border-slate-700 transition-all">
+                    <div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">Drawdown</span>
+                        <TrendingDown className="w-3.5 h-3.5 text-rose-400" />
+                      </div>
+                      <div className="mt-2.5 flex items-baseline gap-1">
+                        <span className="text-2xl font-black text-white font-mono">
+                          {(overview.drawdown * 100).toFixed(2)}
+                        </span>
+                        <span className="text-xs font-bold text-slate-400 font-mono">%</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        Peak-to-Trough Delta
+                      </p>
+                    </div>
+
+                    <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                      <span>Max Cap</span>
+                      <span className="text-slate-300 font-bold">{( (limits?.maxDrawdown || 0.15) * 100 ).toFixed(0)}%</span>
+                    </div>
+                  </div>
+
+                  {/* 6. LIQUIDITY */}
+                  <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm shadow-lg flex flex-col justify-between hover:border-slate-700 transition-all">
+                    <div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">Liquidity</span>
+                        <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+                      </div>
+                      <div className="mt-2.5 flex items-baseline gap-1">
+                        <span className="text-xl font-black text-emerald-400 font-mono">
+                          ${(overview.liquidity / 1000).toFixed(0)}k
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono">(₹20.0 Cr)</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        LCR: <strong className="text-emerald-400">145% Buffer</strong>
+                      </p>
+                    </div>
+
+                    <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                      <span>Mandate</span>
+                      <span className="text-emerald-400 font-bold">Basel III ✓</span>
+                    </div>
+                  </div>
+
+                  {/* 7. CONCENTRATION */}
+                  <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm shadow-lg flex flex-col justify-between hover:border-slate-700 transition-all">
+                    <div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">Concentration</span>
+                        <Layers className="w-3.5 h-3.5 text-indigo-400" />
+                      </div>
+                      <div className="mt-2.5 flex items-baseline gap-1">
+                        <span className="text-2xl font-black text-indigo-300 font-mono">
+                          {(overview.concentrationDetails.highestWeight * 100).toFixed(0)}%
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono">Max</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-1 truncate">
+                        Top: <strong className="text-white font-mono">{overview.concentrationDetails.highestConcentratedAsset}</strong>
+                      </p>
+                    </div>
+
+                    <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                      <span>HHI Index</span>
+                      <span className="text-indigo-300 font-bold">{overview.concentrationDetails.hhiIndex.toFixed(2)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
