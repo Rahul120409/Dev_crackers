@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { AssetClassItem } from '../types/portfolio';
-import { TrendingUp, Shield, Activity, Droplets } from 'lucide-react';
+import { TrendingUp, Shield, Activity, Droplets, Percent } from 'lucide-react';
 
 interface AssetClassCardsProps {
   assets: AssetClassItem[];
@@ -12,28 +12,28 @@ export const AssetClassCards: React.FC<AssetClassCardsProps> = ({ assets }) => {
   const getRiskBadge = (risk: string) => {
     switch (risk) {
       case 'Very Low':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
       case 'Low':
-        return 'bg-teal-50 text-teal-700 border-teal-200';
+        return 'bg-teal-500/15 text-teal-300 border-teal-500/30';
       case 'Medium':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
+        return 'bg-blue-500/15 text-blue-300 border-blue-500/30';
       case 'High':
-        return 'bg-amber-50 text-amber-700 border-amber-200';
+        return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
       default:
-        return 'bg-slate-50 text-slate-700 border-slate-200';
+        return 'bg-slate-800 text-slate-300 border-slate-700';
     }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'OVERWEIGHT':
-        return 'bg-amber-100 text-amber-800 border-amber-300';
+        return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
       case 'UNDERWEIGHT':
-        return 'bg-blue-100 text-blue-800 border-blue-300';
+        return 'bg-blue-500/15 text-blue-300 border-blue-500/30';
       case 'BALANCED':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-300';
+        return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
       default:
-        return 'bg-slate-100 text-slate-700 border-slate-300';
+        return 'bg-slate-800 text-slate-300 border-slate-700';
     }
   };
 
@@ -42,60 +42,74 @@ export const AssetClassCards: React.FC<AssetClassCardsProps> = ({ assets }) => {
       {assets.map((asset) => (
         <div
           key={asset.id}
-          className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group"
+          className="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 shadow-xl backdrop-blur-sm hover:border-slate-700 transition-all flex flex-col justify-between group text-slate-100"
         >
           <div>
             {/* Header: Asset Name & Status Badge */}
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
+              <div className="flex items-center gap-2 min-w-0">
                 <span
                   className="w-3 h-3 rounded-full shrink-0"
                   style={{ backgroundColor: asset.color }}
                 />
-                <span className="font-extrabold text-sm text-slate-900 tracking-tight uppercase">
+                <span className="font-extrabold text-xs text-white tracking-tight uppercase truncate">
                   {asset.name}
                 </span>
               </div>
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded border font-mono ${getStatusBadge(asset.status)}`}>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border font-mono shrink-0 ${getStatusBadge(asset.status)}`}>
                 {asset.status}
               </span>
             </div>
 
-            {/* Value & Percentage */}
+            {/* 1. Asset Value & 2. Current Allocation */}
             <div className="mt-3 flex items-baseline justify-between">
               <div>
-                <span className="text-2xl font-black font-mono tracking-tight text-slate-900">
-                  ₹{asset.valueCr}
+                <span className="text-2xl font-black font-mono tracking-tight text-white">
+                  ₹{asset.valueCr.toFixed(1)}
                 </span>
-                <span className="text-xs font-bold text-slate-500 font-mono ml-1">Cr</span>
+                <span className="text-xs font-bold text-slate-400 font-mono ml-1">Cr</span>
               </div>
-              <span className="text-xs font-bold font-mono px-2 py-1 bg-slate-100 rounded-md text-slate-700">
+              <span className="text-xs font-bold font-mono px-2 py-0.5 bg-indigo-500/15 border border-indigo-500/30 rounded-md text-cyan-300">
                 {asset.allocationPct}% allocation
               </span>
             </div>
 
             {/* Description */}
-            <p className="text-[11px] text-slate-500 mt-2 line-clamp-2 leading-relaxed">
+            <p className="text-[11px] text-slate-400 mt-2 line-clamp-2 leading-relaxed">
               {asset.description}
             </p>
           </div>
 
-          {/* Metrics Footer: Risk & Expected Return */}
-          <div className="mt-4 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
-            <div>
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
-                Risk
-              </span>
-              <span className={`inline-block mt-0.5 text-[11px] font-bold px-2 py-0.5 rounded-full border ${getRiskBadge(asset.riskLevel)}`}>
-                {asset.riskLevel}
-              </span>
+          {/* Metrics Footer: 3. Expected Return, 4. Risk Contribution, 5. Liquidity */}
+          <div className="mt-4 pt-3 border-t border-slate-800/80 space-y-2 text-xs font-mono">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <span className="text-[10px] font-sans font-semibold text-slate-400 uppercase tracking-wider block">
+                  Exp. Return
+                </span>
+                <span className="text-sm font-extrabold text-emerald-400">
+                  +{asset.expectedReturnPct}%
+                </span>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] font-sans font-semibold text-slate-400 uppercase tracking-wider block">
+                  Risk Contrib
+                </span>
+                <span className={`text-sm font-extrabold ${
+                  asset.riskContributionPct > 40 ? 'text-amber-400' : 'text-slate-200'
+                }`}>
+                  {asset.riskContributionPct}%
+                </span>
+              </div>
             </div>
-            <div className="text-right">
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
-                Exp. Return
+
+            <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px]">
+              <span className="text-slate-400 font-sans flex items-center gap-1">
+                <Droplets className="w-3 h-3 text-cyan-400" />
+                Liquidity:
               </span>
-              <span className="text-sm font-extrabold font-mono text-emerald-600 mt-0.5 block">
-                +{asset.expectedReturnPct}%
+              <span className="font-bold text-teal-300">
+                {(asset.liquidityScore * 100).toFixed(0)}% (₹{asset.liquidValueCr} Cr)
               </span>
             </div>
           </div>

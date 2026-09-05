@@ -27,6 +27,94 @@ import {
   RefreshCw
 } from 'lucide-react';
 
+interface AssetAllocationComparison {
+  id: string;
+  name: string;
+  category: string;
+  color: string;
+  currentPct: number;
+  currentValueCr: number;
+  recommendedPct: number;
+  recommendedValueCr: number;
+  deltaPct: number;
+  deltaValueCr: number;
+  action: 'REDUCE' | 'INCREASE' | 'HOLD';
+  actionLabel: string;
+}
+
+const ALLOCATION_ITEMS: AssetAllocationComparison[] = [
+  {
+    id: 'equity',
+    name: 'Listed Equity & ETFs',
+    category: 'High-Beta Growth',
+    color: '#F59E0B',
+    currentPct: 30,
+    currentValueCr: 30.0,
+    recommendedPct: 22,
+    recommendedValueCr: 22.0,
+    deltaPct: -8,
+    deltaValueCr: -8.0,
+    action: 'REDUCE',
+    actionLabel: 'Trim -8% (Sell ₹8.0 Cr)',
+  },
+  {
+    id: 'gov_bonds',
+    name: 'Government Sovereign Bonds',
+    category: 'Sovereign 10Y Benchmark',
+    color: '#3B82F6',
+    currentPct: 30,
+    currentValueCr: 30.0,
+    recommendedPct: 35,
+    recommendedValueCr: 35.0,
+    deltaPct: 5,
+    deltaValueCr: 5.0,
+    action: 'INCREASE',
+    actionLabel: 'Expand +5% (Buy ₹5.0 Cr)',
+  },
+  {
+    id: 'corp_bonds',
+    name: 'Corporate AAA Debt',
+    category: 'Investment Grade Debt',
+    color: '#0D9488',
+    currentPct: 20,
+    currentValueCr: 20.0,
+    recommendedPct: 20,
+    recommendedValueCr: 20.0,
+    deltaPct: 0,
+    deltaValueCr: 0.0,
+    action: 'HOLD',
+    actionLabel: 'Hold 20% (₹20.0 Cr)',
+  },
+  {
+    id: 'gold',
+    name: 'Gold & Strategic Reserves',
+    category: 'Inflation / Hedge Asset',
+    color: '#EAB308',
+    currentPct: 10,
+    currentValueCr: 10.0,
+    recommendedPct: 10,
+    recommendedValueCr: 10.0,
+    deltaPct: 0,
+    deltaValueCr: 0.0,
+    action: 'HOLD',
+    actionLabel: 'Hold 10% (₹10.0 Cr)',
+  },
+  {
+    id: 'cash',
+    name: 'Cash & Overnight Repo',
+    category: 'Tier-1 Immediate Liquidity',
+    color: '#10B981',
+    currentPct: 10,
+    currentValueCr: 10.0,
+    recommendedPct: 13,
+    recommendedValueCr: 13.0,
+    deltaPct: 3,
+    deltaValueCr: 3.0,
+    action: 'INCREASE',
+    actionLabel: 'Expand +3% (Deposit ₹3.0 Cr)',
+  },
+];
+
 interface StrategyOption {
   id: string;
   name: string;
@@ -36,25 +124,18 @@ interface StrategyOption {
   riskScore: number;
   liquidityReserve: string;
   sharpeRatio: string;
-  allocations: {
-    Loans: number;
-    Bonds: number;
-    Cash: number;
-    Equity: number;
-  };
 }
 
 const STRATEGIES: StrategyOption[] = [
   {
     id: 'balanced',
-    name: 'Balanced Basel III Alpha (Recommended)',
-    tag: 'AI OPTIMAL',
+    name: 'Markowitz Efficient Frontier (Recommended)',
+    tag: 'OPTIMAL',
     description: 'Maximizes risk-adjusted yield while preserving statutory liquidity buffers and slashing tail-risk.',
-    yieldDelta: '+1.85%',
+    yieldDelta: '+1.30%',
     riskScore: 54,
-    liquidityReserve: '₹24.0 Cr',
+    liquidityReserve: '₹13.0 Cr',
     sharpeRatio: '1.96',
-    allocations: { Loans: 45, Bonds: 35, Cash: 15, Equity: 5 }
   },
   {
     id: 'conservative',
@@ -63,20 +144,18 @@ const STRATEGIES: StrategyOption[] = [
     description: 'Prioritizes maximum solvency and risk-off sovereign liquidity protection.',
     yieldDelta: '+0.95%',
     riskScore: 36,
-    liquidityReserve: '₹30.0 Cr',
+    liquidityReserve: '₹20.0 Cr',
     sharpeRatio: '1.78',
-    allocations: { Loans: 38, Bonds: 40, Cash: 20, Equity: 2 }
   },
   {
     id: 'yield',
     name: 'Aggressive Capital Yield Maximizer',
     tag: 'MAX YIELD',
-    description: 'Exploits high-yield corporate credit spreads and equity market upside within statutory limits.',
+    description: 'Exploits high-yield corporate credit spreads and equity upside within statutory limits.',
     yieldDelta: '+2.75%',
     riskScore: 66,
-    liquidityReserve: '₹18.0 Cr',
+    liquidityReserve: '₹10.0 Cr',
     sharpeRatio: '1.88',
-    allocations: { Loans: 52, Bonds: 28, Cash: 8, Equity: 12 }
   }
 ];
 
@@ -91,14 +170,7 @@ export default function OptimizationPage() {
   const [isExecuted, setIsExecuted] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Custom Sensitivity Sliders
-  const [riskAversion, setRiskAversion] = useState(6);
-  const [minLiquidity, setMinLiquidity] = useState(20);
-  const [equityCap, setEquityCap] = useState(10);
-
-  // Current baseline allocation
-  const currentAllocation = { Loans: 50, Bonds: 30, Cash: 10, Equity: 10 };
-  const activeStrategy = STRATEGIES.find(s => s.id === selectedStrategyId) || STRATEGIES[0];
+  const activeStrategy = STRATEGIES.find((s: StrategyOption) => s.id === selectedStrategyId) || STRATEGIES[0];
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -143,26 +215,35 @@ export default function OptimizationPage() {
           <div>
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
-                <Sparkles className="w-5 h-5" />
+                <Sparkles className="w-5 h-5 text-cyan-300" />
               </div>
               <div>
                 <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
                   Portfolio & Capital Optimization Engine
                   <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                    1 Active Opportunity Detected
+                    FRONTIER ACTIVE
                   </span>
                 </h1>
                 <p className="text-xs text-slate-400">
-                  Markowitz Mean-Variance & Black-Litterman optimization models with Basel III capital and liquidity constraints.
+                  LLD Section 19.5: Side-by-side comparison of Current vs Recommended allocations with Delta actions and automated rebalancing.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="text-xs font-mono text-slate-400 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800">
-              Book ID: #CS-IND-0926 • ₹100.0 Cr
+              Total Capital: <strong className="text-white">₹100.0 Cr</strong>
             </span>
+            {isExecuted && (
+              <button
+                onClick={handleReset}
+                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 flex items-center gap-1.5 cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                Reset
+              </button>
+            )}
           </div>
         </div>
 
@@ -173,297 +254,393 @@ export default function OptimizationPage() {
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               <span>{toastMessage}</span>
             </div>
+            <button
+              onClick={() => setToastMessage(null)}
+              className="text-emerald-400 hover:text-white underline font-semibold cursor-pointer"
+            >
+              Dismiss
+            </button>
           </div>
         )}
 
         {/* Scrollable Main Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {/* Key Metric Gains Row */}
+          
+          {/* Key Metric Gains Row (Before vs After Optimization) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* 1. Yield Boost */}
-            <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+            {/* 1. Expected Return */}
+            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm shadow-lg">
               <div className="flex justify-between items-start">
-                <span className="text-xs font-medium text-slate-400">Projected Yield Boost</span>
+                <span className="text-xs font-mono font-bold uppercase text-slate-400">Expected Return</span>
                 <TrendingUp className="w-4 h-4 text-emerald-400" />
               </div>
               <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-3xl font-extrabold font-mono text-emerald-400">
-                  {isExecuted ? activeStrategy.yieldDelta : activeStrategy.yieldDelta}
+                <span className="text-xl font-bold font-mono text-slate-500 line-through">7.40%</span>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                <span className="text-2xl font-black font-mono text-emerald-400">
+                  8.70%
                 </span>
-                <span className="text-xs text-emerald-300 font-mono">+₹1.85 Cr/yr</span>
+                <span className="text-[10px] text-emerald-300 font-mono font-bold bg-emerald-500/20 px-1.5 py-0.5 rounded border border-emerald-500/30">+130 bps</span>
               </div>
               <p className="text-[11px] text-slate-400 mt-2">
-                Enhanced treasury spread via liquid overnight repo & sovereign swaps.
+                Projected annual gross return on Markowitz frontier.
               </p>
             </div>
 
-            {/* 2. Risk Score Reduction */}
-            <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+            {/* 2. Risk Score Impact */}
+            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm shadow-lg">
               <div className="flex justify-between items-start">
-                <span className="text-xs font-medium text-slate-400">Risk Score Impact</span>
+                <span className="text-xs font-mono font-bold uppercase text-slate-400">Risk Score Impact</span>
                 <ShieldCheck className="w-4 h-4 text-indigo-400" />
               </div>
               <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-2xl font-bold font-mono text-slate-400 line-through">72</span>
-                <ChevronRight className="w-4 h-4 text-slate-500" />
-                <span className="text-3xl font-extrabold font-mono text-indigo-300">
-                  {isExecuted ? activeStrategy.riskScore : activeStrategy.riskScore}
+                <span className="text-xl font-bold font-mono text-slate-500 line-through">72</span>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                <span className="text-2xl font-black font-mono text-indigo-300">
+                  54
                 </span>
-                <span className="text-xs text-emerald-400 font-mono font-bold">-25% Tail Risk</span>
+                <span className="text-[10px] text-indigo-300 font-mono font-bold bg-indigo-500/20 px-1.5 py-0.5 rounded border border-indigo-500/30">-18 pts</span>
               </div>
               <p className="text-[11px] text-slate-400 mt-2">
-                Shifts portfolio well beneath maximum risk threshold limit of 70.
+                Brings portfolio comfortably below max threshold of 70.
               </p>
             </div>
 
-            {/* 3. Sharpe Ratio Efficiency */}
-            <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+            {/* 3. Value at Risk (VaR 95%) */}
+            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm shadow-lg">
               <div className="flex justify-between items-start">
-                <span className="text-xs font-medium text-slate-400">Sharpe Ratio</span>
+                <span className="text-xs font-mono font-bold uppercase text-slate-400">VaR (95% 1-Day)</span>
                 <Activity className="w-4 h-4 text-cyan-400" />
               </div>
               <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-2xl font-bold font-mono text-slate-400 line-through">1.42</span>
-                <ChevronRight className="w-4 h-4 text-slate-500" />
-                <span className="text-3xl font-extrabold font-mono text-cyan-300">
-                  {activeStrategy.sharpeRatio}
+                <span className="text-lg font-bold font-mono text-slate-500 line-through">₹2.10 Cr</span>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                <span className="text-xl font-black font-mono text-cyan-300">
+                  ₹1.45 Cr
                 </span>
-                <span className="text-xs text-cyan-400 font-mono">+38% Gain</span>
+                <span className="text-[10px] text-cyan-300 font-mono font-bold bg-cyan-500/20 px-1.5 py-0.5 rounded border border-cyan-500/30">-31%</span>
               </div>
               <p className="text-[11px] text-slate-400 mt-2">
-                Markowitz efficient frontier optimal capital point.
+                Tail risk and expected shortfall significantly mitigated.
               </p>
             </div>
 
             {/* 4. Liquidity Reserve */}
-            <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+            <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 backdrop-blur-sm shadow-lg">
               <div className="flex justify-between items-start">
-                <span className="text-xs font-medium text-slate-400">HQLA Liquidity Buffer</span>
-                <Droplets className="w-4 h-4 text-blue-400" />
+                <span className="text-xs font-mono font-bold uppercase text-slate-400">Liquidity Buffer</span>
+                <Droplets className="w-4 h-4 text-teal-400" />
               </div>
               <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-3xl font-extrabold font-mono text-white">
-                  {activeStrategy.liquidityReserve}
+                <span className="text-lg font-bold font-mono text-slate-500 line-through">₹10.0 Cr</span>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
+                <span className="text-xl font-black font-mono text-teal-300">
+                  ₹13.0 Cr
                 </span>
-                <span className="text-xs text-emerald-400 font-mono">160% LCR</span>
+                <span className="text-[10px] text-teal-300 font-mono font-bold bg-teal-500/20 px-1.5 py-0.5 rounded border border-teal-500/30">+₹3.0 Cr</span>
               </div>
               <p className="text-[11px] text-slate-400 mt-2">
-                Statutory requirement is ₹15.0 Cr (Fully compliant).
+                Exceeds statutory LCR requirement of ₹10.0 Cr.
               </p>
             </div>
           </div>
 
-          {/* Strategy Selection Matrix */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
+          {/* ========================================================================= */}
+          {/* SECTION 19.5: SIDE-BY-SIDE COMPARISON TABLE (CURRENT VS OPTIMIZED)        */}
+          {/* ========================================================================= */}
+          <div className="bg-slate-900/70 border border-slate-800 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Scale className="w-4 h-4 text-indigo-400" />
-                  Select Institutional Optimization Strategy
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-cyan-400" />
+                  Side-by-Side Allocation Comparison (Current vs Recommended)
                 </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Choose from pre-computed algorithmic models tailored for treasury governance.
+                  LLD Section 19.5 specification: Compare current and optimized allocation side by side with explicit delta actions.
                 </p>
               </div>
-              {isExecuted && (
-                <button
-                  onClick={handleReset}
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  Reset Rebalance
-                </button>
-              )}
+
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-mono font-bold px-2.5 py-1 rounded-lg bg-indigo-500/20 text-cyan-300 border border-indigo-500/40">
+                  MARKOWITZ FRONTIER MODEL
+                </span>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {STRATEGIES.map((strategy) => (
-                <button
-                  key={strategy.id}
-                  onClick={() => setSelectedStrategyId(strategy.id)}
-                  className={`p-4 rounded-xl text-left border transition-all cursor-pointer ${
-                    selectedStrategyId === strategy.id
-                      ? 'bg-indigo-600/20 border-indigo-500 shadow-md shadow-indigo-950/50'
-                      : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold text-white">{strategy.name}</span>
-                    <span
-                      className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded border ${
-                        strategy.id === 'balanced'
-                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                          : strategy.id === 'conservative'
-                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
-                          : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
-                      }`}
-                    >
-                      {strategy.tag}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
-                    {strategy.description}
-                  </p>
-                  <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800/80 text-center font-mono">
-                    <div>
-                      <span className="text-[9px] text-slate-400 block">Alpha</span>
-                      <span className="text-xs font-bold text-emerald-400">{strategy.yieldDelta}</span>
-                    </div>
-                    <div>
-                      <span className="text-[9px] text-slate-400 block">Risk</span>
-                      <span className="text-xs font-bold text-slate-200">{strategy.riskScore}</span>
-                    </div>
-                    <div>
-                      <span className="text-[9px] text-slate-400 block">Sharpe</span>
-                      <span className="text-xs font-bold text-cyan-400">{strategy.sharpeRatio}</span>
-                    </div>
-                  </div>
-                </button>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-950/80 text-slate-400 font-semibold border-b border-slate-800 select-none">
+                  <tr>
+                    <th className="py-3.5 px-5">Asset Class & Tranche</th>
+                    <th className="py-3.5 px-4 text-center">Category</th>
+                    <th className="py-3.5 px-4 text-right bg-slate-900/40">Current Allocation (%)</th>
+                    <th className="py-3.5 px-4 text-right bg-slate-900/40">Current Value (₹ Cr)</th>
+                    <th className="py-3.5 px-4 text-right bg-indigo-950/30 text-indigo-300">Recommended Allocation (%)</th>
+                    <th className="py-3.5 px-4 text-right bg-indigo-950/30 text-indigo-300">Recommended Value (₹ Cr)</th>
+                    <th className="py-3.5 px-4 text-center">Delta Action (%)</th>
+                    <th className="py-3.5 px-5 text-center">Execution Action</th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-slate-800/80 font-sans">
+                  {ALLOCATION_ITEMS.map((item) => (
+                    <tr key={item.id} className="hover:bg-slate-800/40 transition-colors">
+                      {/* Asset Name */}
+                      <td className="py-3.5 px-5">
+                        <div className="flex items-center gap-2.5">
+                          <span
+                            className="w-3 h-3 rounded-full shrink-0"
+                            style={{ backgroundColor: item.color }}
+                          />
+                          <span className="font-bold text-white text-xs">{item.name}</span>
+                        </div>
+                      </td>
+
+                      {/* Category */}
+                      <td className="py-3.5 px-4 text-center text-slate-400 text-[11px]">
+                        {item.category}
+                      </td>
+
+                      {/* Current Allocation % */}
+                      <td className="py-3.5 px-4 text-right font-mono font-bold text-slate-300 bg-slate-900/40">
+                        {item.currentPct}%
+                      </td>
+
+                      {/* Current Value ₹ Cr */}
+                      <td className="py-3.5 px-4 text-right font-mono font-bold text-slate-200 bg-slate-900/40">
+                        ₹{item.currentValueCr.toFixed(1)} Cr
+                      </td>
+
+                      {/* Recommended Allocation % */}
+                      <td className="py-3.5 px-4 text-right font-mono font-black text-cyan-300 bg-indigo-950/30">
+                        {item.recommendedPct}%
+                      </td>
+
+                      {/* Recommended Value ₹ Cr */}
+                      <td className="py-3.5 px-4 text-right font-mono font-black text-white bg-indigo-950/30">
+                        ₹{item.recommendedValueCr.toFixed(1)} Cr
+                      </td>
+
+                      {/* Delta Action % */}
+                      <td className="py-3.5 px-4 text-center font-mono font-bold">
+                        <span
+                          className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] border ${
+                            item.deltaPct > 0
+                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                              : item.deltaPct < 0
+                              ? 'bg-rose-500/20 text-rose-300 border-rose-500/30'
+                              : 'bg-slate-800 text-slate-400 border-slate-700'
+                          }`}
+                        >
+                          {item.deltaPct > 0 ? `+${item.deltaPct}% (+₹${item.deltaValueCr} Cr)` : item.deltaPct < 0 ? `${item.deltaPct}% (${item.deltaValueCr} Cr)` : '0% (Hold)'}
+                        </span>
+                      </td>
+
+                      {/* Execution Action */}
+                      <td className="py-3.5 px-5 text-center">
+                        <span
+                          className={`inline-block px-3 py-1 rounded-lg text-[11px] font-mono font-bold ${
+                            item.action === 'REDUCE'
+                              ? 'bg-rose-950/80 text-rose-300 border border-rose-600/50'
+                              : item.action === 'INCREASE'
+                              ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-600/50'
+                              : 'bg-slate-800 text-slate-400 border border-slate-700'
+                          }`}
+                        >
+                          {item.actionLabel}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+
+                {/* Table Footer Totals */}
+                <tfoot className="bg-slate-950/90 border-t-2 border-slate-800 text-xs font-mono font-bold text-white">
+                  <tr>
+                    <td className="py-3.5 px-5 font-sans font-black uppercase text-slate-300">
+                      Total Book Allocations
+                    </td>
+                    <td className="py-3.5 px-4 text-center text-slate-500 text-[11px]">
+                      5 Tranches
+                    </td>
+                    <td className="py-3.5 px-4 text-right text-slate-300 bg-slate-900/40">
+                      100.0%
+                    </td>
+                    <td className="py-3.5 px-4 text-right text-slate-200 bg-slate-900/40">
+                      ₹100.0 Cr
+                    </td>
+                    <td className="py-3.5 px-4 text-right text-cyan-300 bg-indigo-950/30">
+                      100.0%
+                    </td>
+                    <td className="py-3.5 px-4 text-right text-white bg-indigo-950/30">
+                      ₹100.0 Cr
+                    </td>
+                    <td className="py-3.5 px-4 text-center text-emerald-400">
+                      Net Zero Delta (₹0)
+                    </td>
+                    <td className="py-3.5 px-5 text-center text-emerald-400 font-sans text-[11px]">
+                      Fully Balanced
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </div>
 
-          {/* Allocation Comparison: Current vs Optimized */}
+          {/* ========================================================================= */}
+          {/* REBALANCE EXECUTION & TRANSACTION SCHEDULE                                */}
+          {/* ========================================================================= */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 bg-slate-900/60 border border-slate-800 rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4">
+            
+            {/* Visual Allocation Shift Progress Bars */}
+            <div className="lg:col-span-7 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 shadow-xl backdrop-blur-sm space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <Layers className="w-4 h-4 text-indigo-400" />
-                  Asset Allocation Shift (Current vs Target)
+                  Asset Shift Visualizer (Current vs Recommended)
                 </h3>
-                <span className="text-[11px] font-mono text-slate-400">Total Book: ₹100.0 Cr</span>
+                <span className="text-[11px] font-mono text-slate-400">Total: ₹100.0 Cr</span>
               </div>
 
-              <div className="space-y-4">
-                {Object.keys(currentAllocation).map((key) => {
-                  const curr = currentAllocation[key as keyof typeof currentAllocation];
-                  const opt = activeStrategy.allocations[key as keyof typeof activeStrategy.allocations];
-                  const delta = opt - curr;
-                  return (
-                    <div key={key} className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
-                      <div className="flex items-center justify-between text-xs mb-2">
-                        <span className="font-bold text-white">{key}</span>
-                        <div className="flex items-center gap-4 font-mono">
-                          <span className="text-slate-400">Current: <strong className="text-slate-200">{curr}% (₹{curr}Cr)</strong></span>
-                          <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
-                          <span className="text-indigo-300">Target: <strong className="text-white">{opt}% (₹{opt}Cr)</strong></span>
-                          <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                              delta > 0
-                                ? 'bg-emerald-500/20 text-emerald-300'
-                                : delta < 0
-                                ? 'bg-red-500/20 text-red-300'
-                                : 'bg-slate-800 text-slate-400'
-                            }`}
-                          >
-                            {delta > 0 ? `+${delta}% (+₹${delta}Cr)` : delta < 0 ? `${delta}% (${delta}Cr)` : '0%'}
-                          </span>
+              <div className="space-y-3">
+                {ALLOCATION_ITEMS.map((item) => (
+                  <div key={item.id} className="p-3.5 rounded-xl bg-slate-800/40 border border-slate-700/60 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                        <span className="font-bold text-white font-mono">{item.name}</span>
+                      </div>
+                      <div className="flex items-center gap-3 font-mono text-[11px]">
+                        <span className="text-slate-400">Current: <strong className="text-slate-200">{item.currentPct}%</strong></span>
+                        <ChevronRight className="w-3 h-3 text-slate-600" />
+                        <span className="text-cyan-300">Target: <strong className="text-white">{item.recommendedPct}%</strong></span>
+                        <span className={`font-bold ${item.deltaPct > 0 ? 'text-emerald-400' : item.deltaPct < 0 ? 'text-rose-400' : 'text-slate-400'}`}>
+                          ({item.deltaPct > 0 ? `+${item.deltaPct}%` : `${item.deltaPct}%`})
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 pt-1">
+                      <div>
+                        <div className="flex justify-between text-[10px] text-slate-400 mb-1 font-mono">
+                          <span>Current</span>
+                          <span>{item.currentPct}%</span>
+                        </div>
+                        <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                          <div className="h-full bg-slate-500 rounded-full" style={{ width: `${item.currentPct * 2}%` }} />
                         </div>
                       </div>
-
-                      {/* Stacked Visual Bar */}
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <span className="text-[9px] text-slate-400 block mb-1">Current</span>
-                          <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                            <div className="h-full bg-slate-400 rounded-full" style={{ width: `${curr * 2}%` }} />
-                          </div>
+                      <div>
+                        <div className="flex justify-between text-[10px] text-cyan-300 mb-1 font-mono">
+                          <span>Recommended</span>
+                          <span>{item.recommendedPct}%</span>
                         </div>
-                        <div>
-                          <span className="text-[9px] text-indigo-300 block mb-1">Target Strategy</span>
-                          <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                            <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${opt * 2}%` }} />
-                          </div>
+                        <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-full" style={{ width: `${item.recommendedPct * 2}%` }} />
                         </div>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Execution Schedule & 1-Click Action */}
-            <div className="lg:col-span-5 bg-slate-900/60 border border-slate-800 rounded-xl p-6 flex flex-col justify-between">
+            {/* Execution Engine Card */}
+            <div className="lg:col-span-5 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 shadow-xl backdrop-blur-sm flex flex-col justify-between">
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-1">
                   <Zap className="w-4 h-4 text-amber-400" />
-                  Rebalancing Order Schedule
+                  Rebalance Execution Router
                 </h3>
                 <p className="text-xs text-slate-400 mb-4">
-                  Step-by-step transaction legs generated for institutional order router.
+                  Multi-leg order routing schedule with automated slippage protection and execution ledger.
                 </p>
 
                 <div className="space-y-3">
-                  <div className={`p-3 rounded-lg border transition-all text-xs font-mono ${
-                    executionStep >= 1 ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200' : 'bg-slate-950/60 border-slate-800 text-slate-300'
+                  {/* Leg 1 */}
+                  <div className={`p-3.5 rounded-xl border transition-all text-xs font-mono ${
+                    executionStep >= 1 ? 'bg-emerald-950/50 border-emerald-500/50 text-emerald-200' : 'bg-slate-800/40 border-slate-700/60 text-slate-300'
                   }`}>
                     <div className="flex items-center justify-between font-bold">
-                      <span>Leg 1: Commercial Credit Sell</span>
-                      {executionStep >= 1 && <Check className="w-4 h-4 text-emerald-400" />}
+                      <span className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center justify-center text-[10px]">1</span>
+                        Leg 1: Equity De-Risking Sell
+                      </span>
+                      {executionStep >= 1 ? <Check className="w-4 h-4 text-emerald-400" /> : <span className="text-[10px] text-slate-500">PENDING</span>}
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1">Trim -₹5.0 Cr Loans ➔ Liquidate into Settlement Account.</p>
+                    <p className="text-[11px] text-slate-400 mt-1 pl-7">Liquidate -₹8.0 Cr Equity ➔ Credit into Central Clearing Book.</p>
                   </div>
 
-                  <div className={`p-3 rounded-lg border transition-all text-xs font-mono ${
-                    executionStep >= 2 ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200' : 'bg-slate-950/60 border-slate-800 text-slate-300'
+                  {/* Leg 2 */}
+                  <div className={`p-3.5 rounded-xl border transition-all text-xs font-mono ${
+                    executionStep >= 2 ? 'bg-emerald-950/50 border-emerald-500/50 text-emerald-200' : 'bg-slate-800/40 border-slate-700/60 text-slate-300'
                   }`}>
                     <div className="flex items-center justify-between font-bold">
-                      <span>Leg 2: Sovereign G-Sec Allocation</span>
-                      {executionStep >= 2 && <Check className="w-4 h-4 text-emerald-400" />}
+                      <span className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 flex items-center justify-center text-[10px]">2</span>
+                        Leg 2: Sovereign G-Sec Buy Order
+                      </span>
+                      {executionStep >= 2 ? <Check className="w-4 h-4 text-emerald-400" /> : <span className="text-[10px] text-slate-500">PENDING</span>}
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1">Acquire +₹5.0 Cr AAA 10Y Sovereign Bonds at par.</p>
+                    <p className="text-[11px] text-slate-400 mt-1 pl-7">Acquire +₹5.0 Cr Sovereign 10-Year AAA Benchmark Bonds.</p>
                   </div>
 
-                  <div className={`p-3 rounded-lg border transition-all text-xs font-mono ${
-                    executionStep >= 3 ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200' : 'bg-slate-950/60 border-slate-800 text-slate-300'
+                  {/* Leg 3 */}
+                  <div className={`p-3.5 rounded-xl border transition-all text-xs font-mono ${
+                    executionStep >= 3 ? 'bg-emerald-950/50 border-emerald-500/50 text-emerald-200' : 'bg-slate-800/40 border-slate-700/60 text-slate-300'
                   }`}>
                     <div className="flex items-center justify-between font-bold">
-                      <span>Leg 3: Overnight Repo Sweep</span>
-                      {executionStep >= 3 && <Check className="w-4 h-4 text-emerald-400" />}
+                      <span className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center justify-center text-[10px]">3</span>
+                        Leg 3: Cash & Overnight Reserve Deposit
+                      </span>
+                      {executionStep >= 3 ? <Check className="w-4 h-4 text-emerald-400" /> : <span className="text-[10px] text-slate-500">PENDING</span>}
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1">Sweep +₹5.0 Cr surplus into 6.75% High-Yield Overnight Facility.</p>
+                    <p className="text-[11px] text-slate-400 mt-1 pl-7">Deposit +₹3.0 Cr into Central Bank Liquid Overnight Facility.</p>
                   </div>
                 </div>
 
-                <div className="mt-4 p-3 rounded-lg bg-slate-950/80 border border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
-                  <span>Est. Execution Cost: <strong className="text-white">₹12,400</strong></span>
-                  <span>Est. Slippage: <strong className="text-emerald-400">0.02%</strong></span>
+                <div className="mt-4 p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between text-xs font-mono text-slate-400">
+                  <span>Est. Execution Friction: <strong className="text-white">₹14,200</strong></span>
+                  <span>Max Slippage: <strong className="text-emerald-400">0.015%</strong></span>
                 </div>
               </div>
 
               <div className="pt-6">
                 {!isExecuted ? (
                   <button
+                    type="button"
                     onClick={handleExecuteRebalance}
                     disabled={isExecuting}
-                    className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-950/60 border border-indigo-400/30 transition-all cursor-pointer"
+                    className="w-full py-4 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-xl shadow-indigo-950/80 border border-indigo-400/40 transition-all cursor-pointer disabled:opacity-50"
                   >
                     {isExecuting ? (
                       <>
                         <RefreshCw className="w-4 h-4 animate-spin text-white" />
-                        <span>Executing Leg {executionStep} of 3...</span>
+                        <span>Executing Transaction Leg {executionStep} of 3...</span>
                       </>
                     ) : (
                       <>
                         <Play className="w-4 h-4 fill-white" />
-                        <span>Execute 1-Click Capital Rebalance</span>
+                        <span>Execute 1-Click Portfolio Rebalancing Order</span>
                       </>
                     )}
                   </button>
                 ) : (
-                  <div className="p-3.5 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-center">
+                  <div className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-500/50 text-center shadow-lg">
                     <div className="flex items-center justify-center gap-2 text-emerald-300 font-bold text-sm">
                       <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                      <span>Capital Rebalancing Complete</span>
+                      <span>Rebalancing Executed & Settled</span>
                     </div>
-                    <p className="text-[11px] text-emerald-400/80 mt-1">
-                      New weights active across treasury books and verified against Basel III limits.
+                    <p className="text-[11px] text-emerald-300/80 mt-1">
+                      New weights active across treasury books. Decision logged to immutable audit trail.
                     </p>
                   </div>
                 )}
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
