@@ -172,35 +172,35 @@ export default function PortfolioPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-[#02040a] text-white font-sans">
+      <div className="min-h-screen w-full flex items-center justify-center bg-[#caf0f8] dark:bg-[#02040a] text-[#03045e] dark:text-white font-sans">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-3 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin" />
-          <p className="text-xs font-mono text-slate-400">Loading Portfolio & Asset Book...</p>
+          <div className="w-10 h-10 border-3 border-[#0077b6]/30 border-t-[#0077b6] rounded-full animate-spin" />
+          <p className="text-xs font-mono font-bold text-[#03045e] dark:text-slate-400">Loading Portfolio & Asset Book...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-[#070b14] text-slate-100 font-sans overflow-hidden selection:bg-indigo-500 selection:text-white">
+    <div className="flex h-screen bg-[#caf0f8] dark:bg-[#070b14] text-[#03045e] dark:text-slate-100 font-sans overflow-hidden transition-colors">
       {/* 1. LEFT SIDEBAR */}
       <Sidebar currentTab="portfolio" onSelectTab={handleSelectTab} />
 
       {/* 2. MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-gradient-to-b from-[#0a0f1d] via-[#070b14] to-[#04070e]">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-gradient-to-b from-[#caf0f8] via-[#def6fa] to-[#c2eff7] dark:from-[#0a0f1d] dark:via-[#070b14] dark:to-[#04070e] transition-colors">
         {/* TOP HEADER */}
         <Header onTriggerRefresh={handleRefresh} isRefreshing={isRefreshing} />
 
         {/* TOAST NOTIFICATION */}
         {toastMessage && (
-          <div className="bg-emerald-950/90 text-emerald-200 px-6 py-2.5 text-xs flex items-center justify-between border-b border-emerald-700/80 shadow-md animate-in slide-in-from-top duration-300">
-            <div className="flex items-center gap-2 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="bg-emerald-100 dark:bg-emerald-950/90 text-emerald-900 dark:text-emerald-200 px-6 py-2.5 text-xs flex items-center justify-between border-b border-emerald-300 dark:border-emerald-700/80 shadow-md animate-in slide-in-from-top duration-300">
+            <div className="flex items-center gap-2 font-bold">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>{toastMessage}</span>
             </div>
             <button
               onClick={() => setToastMessage(null)}
-              className="text-emerald-400 hover:text-white text-xs underline font-semibold cursor-pointer"
+              className="text-emerald-700 dark:text-emerald-400 hover:underline text-xs font-bold cursor-pointer"
             >
               Dismiss
             </button>
@@ -213,19 +213,19 @@ export default function PortfolioPage() {
           {/* ========================================================================= */}
           {/* PAGE TITLE BAR & USER INPUT ACTIONS                                        */}
           {/* ========================================================================= */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 p-5 rounded-2xl border border-slate-800 backdrop-blur-sm shadow-xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/95 dark:bg-slate-900/60 p-5 rounded-2xl border-2 border-[#0077b6]/25 dark:border-slate-800 shadow-sm backdrop-blur-sm">
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                <h1 className="text-xl sm:text-2xl font-black text-[#03045e] dark:text-white tracking-tight">
                   {portfolioName}
                 </h1>
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-black px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   PORTFOLIO LIVE
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                Total Capital: <strong className="text-white font-mono">₹{totalCapitalCr} Cr</strong> • {assets.length} Active Asset Tranches • Basel III Liquidity Verified
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 font-medium">
+                Total Capital: <strong className="text-[#03045e] dark:text-white font-mono font-black">₹{totalCapitalCr} Cr</strong> • {assets.length} Active Asset Tranches • Basel III Liquidity Verified
               </p>
             </div>
 

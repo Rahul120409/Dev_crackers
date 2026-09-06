@@ -45,6 +45,13 @@ function LoginCommandCenter() {
 
   const handleEnterCommandCenter = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // If already granted, clicking the button proceeds to dashboard
+    if (authState === 'granted') {
+      router.push('/dashboard');
+      return;
+    }
+
     setErrorMessage(null);
     setIsUnregisteredEmail(false);
 
@@ -61,11 +68,8 @@ function LoginCommandCenter() {
         password,
       });
 
-      // Show "ACCESS GRANTED" cinematic convergence
+      // Show "ACCESS GRANTED" and wait for user to click to enter
       setAuthState('granted');
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 1200);
     } catch (err: any) {
       setAuthState('idle');
       if (err.message && (err.message.includes('UNREGISTERED_EMAIL') || err.message.includes('not registered'))) {
@@ -78,6 +82,11 @@ function LoginCommandCenter() {
   };
 
   const handleDemoAccess = async () => {
+    if (authState === 'granted') {
+      router.push('/dashboard');
+      return;
+    }
+
     setAuthState('authenticating');
     setErrorMessage(null);
     setIsUnregisteredEmail(false);
@@ -88,14 +97,8 @@ function LoginCommandCenter() {
         password: 'CapitalGuard@2026',
       });
       setAuthState('granted');
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 1000);
     } catch {
       setAuthState('granted');
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 1000);
     }
   };
 
@@ -107,48 +110,48 @@ function LoginCommandCenter() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#02040a] text-slate-100 flex flex-col justify-between p-4 sm:p-8 select-none overflow-hidden font-sans">
+    <div className="relative min-h-screen w-full bg-gradient-to-br from-[#caf0f8] via-[#def6fa] to-[#c2eff7] text-slate-900 flex flex-col justify-between p-4 sm:p-8 select-none overflow-hidden font-sans antialiased">
       
       {/* ========================================================================= */}
       {/* 1. DYNAMIC LIVING CAPITAL NETWORK & FINANCIAL SHIELD (BACKGROUND)          */}
       {/* ========================================================================= */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
-        {/* Subtle Micro-Grid */}
-        <div className="absolute inset-0 opacity-[0.06]">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="login-grid" width="48" height="48" patternUnits="userSpaceOnUse">
-                <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#38BDF8" strokeWidth="0.8" strokeDasharray="3 3" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#login-grid)" />
-          </svg>
-        </div>
-
-        {/* Ambient Radial Lighting that responds to state */}
+        {/* Ambient Radial Soft Glows */}
         <div
-          className={`absolute rounded-full blur-[160px] transition-all duration-1000 ${
+          className={`absolute rounded-full blur-[140px] transition-all duration-700 ${
             authState === 'granted'
-              ? 'w-[900px] h-[900px] bg-emerald-600/25'
+              ? 'w-[850px] h-[850px] bg-emerald-400/30 scale-125'
               : focusedField === 'password'
-              ? 'w-[750px] h-[750px] bg-blue-600/20'
+              ? 'w-[800px] h-[800px] bg-[#00b4d8]/30 scale-110'
               : focusedField === 'email'
-              ? 'w-[750px] h-[750px] bg-cyan-600/20'
-              : 'w-[650px] h-[650px] bg-indigo-900/15'
+              ? 'w-[850px] h-[850px] bg-gradient-to-tr from-[#6366f1]/45 via-[#8b5cf6]/40 to-[#00b4d8]/30 scale-115'
+              : 'w-[700px] h-[700px] bg-[#0096c7]/20'
+          }`}
+        />
+        <div
+          className={`absolute -top-32 left-1/4 w-[500px] h-[500px] rounded-full blur-[120px] pointer-events-none transition-colors duration-700 ${
+            focusedField === 'email' ? 'bg-[#818cf8]/35' : 'bg-white/40'
+          }`}
+        />
+        <div
+          className={`absolute bottom-0 right-1/4 w-[550px] h-[550px] rounded-full blur-[120px] pointer-events-none transition-colors duration-700 ${
+            focusedField === 'email' ? 'bg-[#c084fc]/35' : 'bg-[#90e0ef]/40'
           }`}
         />
 
         {/* Background Multi-Faceted Financial Shield HUD */}
-        <div className={`opacity-25 transition-all duration-700 ${
+        <div className={`transition-all duration-700 ${
           authState === 'granted'
-            ? 'scale-125 opacity-70 filter drop-shadow-[0_0_40px_#10b981]'
+            ? 'scale-125 opacity-60 filter drop-shadow-[0_0_40px_#10b981]'
+            : focusedField === 'email'
+            ? 'scale-115 opacity-40 filter drop-shadow-[0_0_30px_rgba(99,102,241,0.5)]'
             : focusedField !== 'none'
-            ? 'scale-110 opacity-40'
+            ? 'scale-110 opacity-35'
             : 'scale-100 opacity-20'
         }`}>
           <FinancialShieldHUD
             activeNode={focusedField === 'email' ? 'assets' : focusedField === 'password' ? 'liquidity' : 'all'}
-            statusGlow={authState === 'granted' ? 'emerald' : focusedField !== 'none' ? 'cyan' : 'blue'}
+            statusGlow={authState === 'granted' ? 'emerald' : focusedField === 'email' ? 'indigo' : focusedField === 'password' ? 'cyan' : 'blue'}
             size="lg"
           />
         </div>
@@ -159,13 +162,13 @@ function LoginCommandCenter() {
       {/* ========================================================================= */}
       <header className="relative z-20 w-full max-w-6xl mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center text-white border border-cyan-400/40 shadow-lg shadow-cyan-950/80 group-hover:scale-105 transition-transform">
-            <Shield className="w-4 h-4" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0077b6] via-[#0096c7] to-[#00b4d8] flex items-center justify-center text-white border-2 border-white shadow-md group-hover:scale-105 transition-transform">
+            <Shield className="w-5 h-5 text-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-sm tracking-[0.15em] text-white uppercase">CAPITALGUARD</span>
-              <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-950/80 text-cyan-300 border border-cyan-500/30">
+              <span className="font-black text-lg tracking-[0.12em] text-[#03045e] uppercase">CAPITALGUARD</span>
+              <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded bg-[#03045e] text-[#caf0f8] shadow-xs">
                 PORTAL
               </span>
             </div>
@@ -173,12 +176,12 @@ function LoginCommandCenter() {
         </Link>
 
         {/* System telemetry indicator */}
-        <div className="hidden sm:flex items-center gap-3 text-[11px] font-mono text-slate-400">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/80 border border-slate-800">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>NODE ACTIVE</span>
-            <span className="text-slate-600">•</span>
-            <span className="text-slate-500">256-BIT ENCRYPTION</span>
+        <div className="hidden sm:flex items-center gap-3 text-xs font-mono">
+          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-[#0077b6]/30 shadow-sm text-[#03045e]">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
+            <span className="font-extrabold text-[#03045e]">NODE ACTIVE</span>
+            <span className="text-slate-400">•</span>
+            <span className="text-[#0077b6] font-bold">256-BIT ENCRYPTION</span>
           </div>
         </div>
       </header>
@@ -188,50 +191,50 @@ function LoginCommandCenter() {
       {/* ========================================================================= */}
       <main className="relative z-20 w-full max-w-md mx-auto my-auto py-6">
         <div
-          className={`relative rounded-2xl bg-slate-950/85 backdrop-blur-2xl border transition-all duration-500 p-7 sm:p-8 shadow-2xl ${
+          className={`relative rounded-2xl bg-white/95 backdrop-blur-2xl border-2 transition-all duration-500 p-7 sm:p-8 shadow-[0_20px_50px_rgba(0,119,182,0.18)] ${
             authState === 'granted'
-              ? 'border-emerald-500/70 shadow-[0_0_50px_rgba(16,185,129,0.3)]'
+              ? 'border-emerald-500 shadow-[0_0_50px_rgba(16,185,129,0.3)]'
               : focusedField !== 'none'
-              ? 'border-cyan-500/50 shadow-[0_0_40px_rgba(6,182,212,0.2)]'
-              : 'border-slate-800/90 shadow-black/80'
+              ? 'border-[#0077b6] shadow-[0_15px_40px_rgba(0,119,182,0.22)]'
+              : 'border-[#0077b6]/30'
           }`}
         >
           {/* Subtle Top Indicator Tag */}
-          <div className="flex items-center justify-between pb-3 mb-5 border-b border-slate-800/80">
-            <div className="inline-flex items-center gap-1.5 text-[10px] font-mono tracking-wider uppercase text-cyan-400">
-              <Shield className="w-3 h-3 text-cyan-400" />
+          <div className="flex items-center justify-between pb-3.5 mb-5 border-b border-[#0077b6]/20">
+            <div className="inline-flex items-center gap-1.5 text-xs font-mono tracking-wider uppercase text-[#03045e] font-black">
+              <Shield className="w-3.5 h-3.5 text-[#0077b6]" />
               <span>CAPITALGUARD / SECURE ACCESS</span>
             </div>
 
             <button
               type="button"
               onClick={handleFillDemo}
-              className="text-[10px] font-mono text-slate-400 hover:text-cyan-300 bg-slate-900/90 hover:bg-slate-850 px-2 py-0.5 rounded border border-slate-800 hover:border-cyan-500/40 transition-colors flex items-center gap-1 cursor-pointer"
+              className="text-xs font-mono text-[#03045e] hover:text-[#0077b6] bg-[#caf0f8] hover:bg-[#def6fa] px-2.5 py-1 rounded-md border border-[#0077b6]/30 transition-colors flex items-center gap-1.5 cursor-pointer font-bold shadow-xs"
               title="Quick fill test credentials"
             >
-              <KeyRound className="w-2.5 h-2.5" />
+              <KeyRound className="w-3 h-3 text-[#0077b6]" />
               <span>Auto-Fill Demo</span>
             </button>
           </div>
 
           {/* Heading & Subtitle */}
           <div className="mb-6">
-            <h2 className="text-2xl font-bold tracking-tight text-white">Welcome Back</h2>
-            <p className="text-xs text-slate-400 mt-1 font-sans">Enter the command center</p>
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#03045e]">Welcome Back</h2>
+            <p className="text-xs sm:text-sm text-[#0077b6] mt-1 font-bold">Enter the command center</p>
           </div>
 
           {/* Unregistered Email Alert */}
           {isUnregisteredEmail && (
-            <div className="mb-4 p-3.5 rounded-xl bg-amber-950/50 border border-amber-800/70 text-amber-200 text-xs space-y-2 animate-in fade-in">
+            <div className="mb-4 p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs space-y-2 animate-in fade-in">
               <div className="flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <div className="text-[11px] leading-relaxed">
-                  No registered profile found for <strong className="font-mono text-white">{email}</strong>.
+                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <div className="text-[11px] leading-relaxed font-medium">
+                  No registered profile found for <strong className="font-mono text-[#03045e]">{email}</strong>.
                 </div>
               </div>
               <Link
                 href={`/register?email=${encodeURIComponent(email)}`}
-                className="w-full py-1.5 px-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg transition-colors flex items-center justify-center gap-1 text-[11px]"
+                className="w-full py-2 px-3 bg-[#03045e] hover:bg-[#0077b6] text-white font-black rounded-lg transition-colors flex items-center justify-center gap-1 text-xs"
               >
                 <span>Create Account with this Email →</span>
               </Link>
@@ -240,9 +243,9 @@ function LoginCommandCenter() {
 
           {/* Generic Error Alert */}
           {!isUnregisteredEmail && errorMessage && (
-            <div className="mb-4 p-3 rounded-xl bg-rose-950/60 border border-rose-800/80 text-rose-200 text-xs flex items-center gap-2 animate-in fade-in">
-              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-              <span className="text-[11px]">{errorMessage}</span>
+            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-xs flex items-center gap-2 animate-in fade-in">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              <span className="text-[11px] font-bold">{errorMessage}</span>
             </div>
           )}
 
@@ -250,7 +253,7 @@ function LoginCommandCenter() {
           <form onSubmit={handleEnterCommandCenter} className="space-y-4">
             {/* EMAIL */}
             <div>
-              <label className="block text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-widest mb-1.5">
+              <label className="block text-[11px] font-mono font-black text-[#03045e] uppercase tracking-widest mb-1.5">
                 EMAIL
               </label>
               <div className="relative">
@@ -265,14 +268,14 @@ function LoginCommandCenter() {
                   onBlur={() => setFocusedField('none')}
                   placeholder="Enter your email address"
                   required
-                  className="w-full bg-slate-900/90 border border-slate-800 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/50 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white placeholder-slate-600 transition-all outline-none font-sans"
+                  className="w-full bg-[#caf0f8]/30 border-2 border-[#0077b6]/30 focus:border-[#0077b6] focus:bg-white focus:ring-2 focus:ring-[#0077b6]/20 rounded-xl px-4 py-3 text-xs sm:text-sm text-[#03045e] font-bold placeholder-slate-400 transition-all outline-none font-sans"
                 />
               </div>
             </div>
 
             {/* PASSWORD */}
             <div>
-              <label className="block text-[10px] font-mono font-semibold text-slate-400 uppercase tracking-widest mb-1.5">
+              <label className="block text-[11px] font-mono font-black text-[#03045e] uppercase tracking-widest mb-1.5">
                 PASSWORD
               </label>
               <div className="relative">
@@ -284,12 +287,12 @@ function LoginCommandCenter() {
                   onBlur={() => setFocusedField('none')}
                   placeholder="Enter your password"
                   required
-                  className="w-full bg-slate-900/90 border border-slate-800 focus:border-blue-400 focus:ring-1 focus:ring-blue-400/50 rounded-xl px-3.5 py-2.5 pr-10 text-xs sm:text-sm text-white placeholder-slate-600 transition-all outline-none font-sans"
+                  className="w-full bg-[#caf0f8]/30 border-2 border-[#0077b6]/30 focus:border-[#0077b6] focus:bg-white focus:ring-2 focus:ring-[#0077b6]/20 rounded-xl px-4 py-3 pr-10 text-xs sm:text-sm text-[#03045e] font-bold placeholder-slate-400 transition-all outline-none font-sans"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 p-1 cursor-pointer"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#0077b6] hover:text-[#03045e] p-1 cursor-pointer"
                   aria-label="Toggle password visibility"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -300,11 +303,11 @@ function LoginCommandCenter() {
             {/* PRIMARY ENTER BUTTON */}
             <button
               type="submit"
-              disabled={authState !== 'idle'}
-              className={`w-full py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer mt-3 shadow-lg ${
+              disabled={authState === 'authenticating'}
+              className={`w-full py-4 px-4 rounded-xl text-xs sm:text-sm font-black tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer mt-4 border-2 ${
                 authState === 'granted'
-                  ? 'bg-emerald-600 text-white shadow-emerald-950/80 border border-emerald-400/50'
-                  : 'bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white shadow-cyan-950/60 border border-cyan-400/30'
+                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400 shadow-[0_10px_30px_rgba(16,185,129,0.4)] hover:scale-[1.02] active:scale-[0.98] ring-4 ring-emerald-400/30 animate-pulse'
+                  : 'bg-[#03045e] hover:bg-[#0077b6] text-white border-[#03045e] shadow-[0_10px_25px_rgba(3,4,94,0.25)] hover:scale-[1.02] active:scale-[0.98]'
               }`}
             >
               {authState === 'authenticating' ? (
@@ -314,51 +317,52 @@ function LoginCommandCenter() {
                 </>
               ) : authState === 'granted' ? (
                 <>
-                  <CheckCircle2 className="w-4 h-4 text-white" />
+                  <CheckCircle2 className="w-5 h-5 text-white" />
                   <span>ACCESS GRANTED</span>
                 </>
               ) : (
                 <>
                   <span>ENTER CAPITALGUARD</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 text-white" />
                 </>
               )}
             </button>
           </form>
 
           {/* SYSTEM STATUS INDICATORS */}
-          <div className="mt-4 pt-3.5 border-t border-slate-900 flex items-center justify-between text-[10px] font-mono text-slate-500">
-            <span className="flex items-center gap-1.5 text-emerald-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          <div className="mt-4 pt-3.5 border-t border-[#0077b6]/20 flex items-center justify-between text-[11px] font-mono">
+            <span className="flex items-center gap-1.5 text-emerald-700 font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
               SECURE CONNECTION
             </span>
-            <span className="flex items-center gap-1.5 text-slate-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="flex items-center gap-1.5 text-[#0077b6] font-bold">
+              <span className="w-2 h-2 rounded-full bg-[#0077b6] animate-pulse" />
               SYSTEM OPERATIONAL
             </span>
           </div>
 
           {/* EXPLORE DEMO (SECONDARY ACTION) */}
-          <div className="mt-4 pt-3 border-t border-slate-900">
+          <div className="mt-4 pt-3 border-t border-[#0077b6]/20">
             <button
               type="button"
               onClick={handleDemoAccess}
-              disabled={authState !== 'idle'}
-              className="w-full py-2.5 px-3 rounded-lg bg-slate-900/60 hover:bg-slate-900 text-slate-400 hover:text-cyan-300 text-xs font-mono font-medium transition-all flex items-center justify-center gap-1.5 border border-slate-800/80 hover:border-cyan-500/30 cursor-pointer"
+              disabled={authState === 'authenticating'}
+              className="w-full py-2.5 px-3 rounded-xl bg-[#caf0f8] hover:bg-[#def6fa] text-[#03045e] text-xs font-mono font-black transition-all flex items-center justify-center gap-1.5 border-2 border-[#0077b6]/30 hover:border-[#03045e] cursor-pointer shadow-xs"
             >
-              <Zap className="w-3.5 h-3.5 text-cyan-400" />
+              <Zap className="w-3.5 h-3.5 text-[#0077b6]" />
               <span>EXPLORE DEMO MODE (JUDGES)</span>
             </button>
           </div>
 
-          {/* REGISTER LINK */}
-          <div className="mt-5 pt-3 border-t border-slate-900 text-center text-xs text-slate-400">
+          {/* Bottom Switch to Register */}
+          <div className="mt-5 text-center text-xs text-slate-600 font-medium">
             <span>New to CapitalGuard? </span>
             <Link
               href={`/register${email ? `?email=${encodeURIComponent(email)}` : ''}`}
-              className="font-bold text-cyan-400 hover:text-cyan-300 hover:underline transition-colors ml-1 inline-flex items-center gap-0.5"
+              className="text-[#0077b6] font-black hover:text-[#03045e] hover:underline transition-colors ml-1 inline-flex items-center gap-1"
             >
-              <span>Create Account →</span>
+              <span>Create Account</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
@@ -367,7 +371,7 @@ function LoginCommandCenter() {
       {/* ========================================================================= */}
       {/* 4. FOOTER                                                                 */}
       {/* ========================================================================= */}
-      <footer className="relative z-20 w-full max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between text-[10px] font-mono text-slate-600 gap-2 border-t border-slate-900 pt-3">
+      <footer className="relative z-20 w-full max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-[#03045e]/80 font-bold gap-2 border-t border-[#0077b6]/25 pt-3">
         <div>CAPITALGUARD ARCHITECTURE // TIER-1 PROTOCOL</div>
         <div className="flex items-center gap-3">
           <span>BASEL III COMPLIANT</span>

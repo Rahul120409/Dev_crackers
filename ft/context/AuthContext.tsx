@@ -19,9 +19,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function initAuth() {
+    function initAuth() {
       try {
-        const stored = await import('../services/auth').then(m => m.getProfileMe());
+        const stored = getCurrentUser();
         if (stored) {
           setUser(stored);
         }

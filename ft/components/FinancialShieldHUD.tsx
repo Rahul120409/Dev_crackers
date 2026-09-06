@@ -12,7 +12,7 @@ interface FinancialShieldHUDProps {
     risk?: boolean;
   };
   securityLevel?: number; // 0 to 4
-  statusGlow?: 'blue' | 'cyan' | 'emerald' | 'amber';
+  statusGlow?: 'blue' | 'cyan' | 'emerald' | 'amber' | 'indigo' | 'purple';
   size?: 'sm' | 'md' | 'lg';
   interactive?: boolean;
 }
@@ -53,6 +53,10 @@ export const FinancialShieldHUD: React.FC<FinancialShieldHUDProps> = ({
       ? '#3B82F6'
       : statusGlow === 'amber'
       ? '#F59E0B'
+      : statusGlow === 'indigo'
+      ? '#6366F1'
+      : statusGlow === 'purple'
+      ? '#8B5CF6'
       : '#06B6D4';
 
   const viewBoxSize = 500;

@@ -39,57 +39,47 @@ export default function WelcomeGetStartedPage() {
   };
 
   return (
-    <div className={`min-h-screen w-full bg-[#02050e] text-slate-100 flex flex-col justify-between p-6 sm:p-10 select-none overflow-x-hidden font-sans antialiased relative transition-opacity duration-300 ${isNavigating ? 'opacity-0 scale-98' : 'opacity-100 scale-100'}`}>
+    <div className={`min-h-screen w-full bg-gradient-to-br from-[#caf0f8] via-[#def6fa] to-[#c2eff7] text-slate-900 flex flex-col justify-between p-6 sm:p-10 select-none overflow-x-hidden font-sans antialiased relative transition-opacity duration-300 ${isNavigating ? 'opacity-0 scale-98' : 'opacity-100 scale-100'}`}>
       
       {/* ========================================================================= */}
-      {/* 1. BACKGROUND AMBIENT GLOWS & GRID PATTERN                                */}
+      {/* 1. BACKGROUND AMBIENT GLOWS (NO GRID LINES)                               */}
       {/* ========================================================================= */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Radial ambient lighting */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[550px] bg-gradient-to-b from-indigo-600/15 via-blue-600/10 to-transparent rounded-full blur-[140px]" />
-        <div className="absolute -top-20 left-1/5 w-[450px] h-[450px] bg-cyan-500/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-10 right-1/5 w-[500px] h-[500px] bg-indigo-700/10 rounded-full blur-[130px]" />
-
-        {/* Ambient Grid Overlay */}
-        <div 
-          className="absolute inset-0 opacity-[0.15]"
-          style={{
-            backgroundImage: `radial-gradient(rgba(56, 189, 248, 0.4) 1px, transparent 1px), radial-gradient(rgba(56, 189, 248, 0.2) 1px, transparent 1px)`,
-            backgroundSize: '40px 40px',
-            backgroundPosition: '0 0, 20px 20px'
-          }}
-        />
+        {/* Soft atmospheric ambient glow */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[550px] bg-gradient-to-b from-[#00b4d8]/20 via-[#0077b6]/15 to-transparent rounded-full blur-[140px]" />
+        <div className="absolute -top-20 left-1/5 w-[500px] h-[500px] bg-white/45 rounded-full blur-[120px]" />
+        <div className="absolute bottom-10 right-1/5 w-[550px] h-[550px] bg-[#90e0ef]/45 rounded-full blur-[120px]" />
       </div>
 
       {/* ========================================================================= */}
       {/* 2. TOP INSTITUTIONAL HEADER                                               */}
       {/* ========================================================================= */}
-      <header className="relative z-20 w-full flex items-center justify-between border-b border-slate-800/80 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-indigo-900/40 ring-1 ring-indigo-400/40">
-            <Shield className="w-5 h-5" />
+      <header className="relative z-20 w-full flex items-center justify-between border-2 border-[#0077b6]/25 bg-white/90 backdrop-blur-md rounded-2xl px-6 py-4 shadow-[0_10px_30px_rgba(0,119,182,0.12)]">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0077b6] via-[#0096c7] to-[#00b4d8] flex items-center justify-center text-white shadow-md ring-2 ring-white shrink-0">
+            <Shield className="w-6 h-6 text-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-white text-base tracking-tight">CapitalGuard</span>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-400/30">
+              <span className="font-black text-[#03045e] text-lg sm:text-xl tracking-tight">CapitalGuard</span>
+              <span className="text-[11px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded bg-[#03045e] text-[#caf0f8] shadow-xs">
                 ENTERPRISE
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium leading-none mt-0.5">
+            <p className="text-xs text-[#0077b6] font-bold leading-none mt-1">
               Institutional Asset & Capital Operating System
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 text-xs font-mono">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/80 border border-slate-800 text-slate-400">
-            <Building className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Apex Commercial Bank Ltd.</span>
+        <div className="flex items-center gap-3.5 text-xs font-mono">
+          <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-[#caf0f8]/60 border border-[#0077b6]/30 text-[#03045e] shadow-xs">
+            <Building className="w-4 h-4 text-[#0077b6] shrink-0" />
+            <span className="font-black text-[#03045e]">Apex Commercial Bank Ltd.</span>
           </div>
           <button
             onClick={handleGetStarted}
-            className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-medium border border-slate-700 transition-colors cursor-pointer"
+            className="px-5 py-2.5 rounded-xl bg-[#03045e] hover:bg-[#0077b6] text-white font-black text-xs transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95 tracking-wide uppercase"
           >
             Officer Sign In
           </button>
@@ -102,21 +92,21 @@ export default function WelcomeGetStartedPage() {
       <main className="relative z-20 flex-1 flex flex-col items-center justify-center my-auto py-8 text-center max-w-4xl mx-auto w-full">
         
         {/* Eyebrow Badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-mono font-medium mb-5 shadow-sm">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+        <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/95 border-2 border-[#0077b6]/30 text-[#03045e] text-xs font-mono font-black mb-6 shadow-sm">
+          <Sparkles className="w-4 h-4 text-[#0077b6] animate-pulse" />
           <span>Next-Generation Balance Sheet Governance</span>
         </div>
 
         {/* Hero Headlines */}
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.05]">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-[#03045e] tracking-tight leading-[1.05]">
           Protect the Capital. <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-400">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0077b6] via-[#0096c7] to-[#03045e]">
             Optimize the Future.
           </span>
         </h1>
 
         {/* Subtitle */}
-        <p className="mt-5 text-sm sm:text-lg text-slate-300 max-w-2xl font-normal leading-relaxed">
+        <p className="mt-5 text-sm sm:text-lg text-[#03045e]/90 max-w-2xl font-semibold leading-relaxed">
           Comprehensive real-time risk simulation, portfolio optimization, automated Basel III regulatory safeguards, and liquidity management for institutional treasuries.
         </p>
 
@@ -127,15 +117,15 @@ export default function WelcomeGetStartedPage() {
           <button
             id="welcome-get-started-button"
             onClick={handleGetStarted}
-            className="w-full sm:w-auto flex-1 group px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-base flex items-center justify-center gap-3 shadow-[0_0_35px_rgba(56,189,248,0.45)] border border-cyan-400/40 transition-all transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+            className="w-full sm:w-auto flex-1 group px-8 py-4 rounded-xl bg-[#03045e] hover:bg-[#0077b6] text-white font-black text-base flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(3,4,94,0.3)] transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
           >
             <span>Get Started</span>
-            <ArrowRight className="w-5 h-5 text-cyan-200 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
           </button>
 
           <button
             onClick={handleRegister}
-            className="w-full sm:w-auto px-7 py-4 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white font-semibold text-sm border border-slate-700/80 transition-all cursor-pointer"
+            className="w-full sm:w-auto px-7 py-4 rounded-xl bg-white hover:bg-[#03045e] text-[#03045e] hover:text-white font-black text-sm border-2 border-[#0077b6]/40 transition-all cursor-pointer shadow-sm"
           >
             Create Account
           </button>
@@ -143,32 +133,32 @@ export default function WelcomeGetStartedPage() {
 
         {/* Core Institutional Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12 w-full text-left">
-          <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800/80 backdrop-blur-sm hover:border-slate-700 transition-colors">
-            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-3">
-              <ShieldCheck className="w-5 h-5" />
+          <div className="p-5 rounded-2xl bg-white/90 border-2 border-[#0077b6]/25 backdrop-blur-sm hover:border-[#0077b6] transition-all hover:shadow-lg">
+            <div className="w-10 h-10 rounded-xl bg-[#caf0f8] border border-[#0077b6]/40 flex items-center justify-center text-[#03045e] mb-3 shadow-xs">
+              <ShieldCheck className="w-5 h-5 text-[#03045e]" />
             </div>
-            <div className="text-sm font-bold text-white">Automated Safeguards</div>
-            <p className="text-xs text-slate-400 mt-1">
+            <div className="text-base font-black text-[#03045e]">Automated Safeguards</div>
+            <p className="text-xs text-slate-700 mt-1.5 leading-relaxed font-medium">
               Active breach detection, automated emergency rebalancing, and statutory Basel III buffers.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800/80 backdrop-blur-sm hover:border-slate-700 transition-colors">
-            <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mb-3">
-              <Zap className="w-5 h-5" />
+          <div className="p-5 rounded-2xl bg-white/90 border-2 border-[#0077b6]/25 backdrop-blur-sm hover:border-[#0077b6] transition-all hover:shadow-lg">
+            <div className="w-10 h-10 rounded-xl bg-[#caf0f8] border border-[#0077b6]/40 flex items-center justify-center text-[#03045e] mb-3 shadow-xs">
+              <Zap className="w-5 h-5 text-[#03045e]" />
             </div>
-            <div className="text-sm font-bold text-white">Stress Test Simulator</div>
-            <p className="text-xs text-slate-400 mt-1">
+            <div className="text-base font-black text-[#03045e]">Stress Test Simulator</div>
+            <p className="text-xs text-slate-700 mt-1.5 leading-relaxed font-medium">
               Deterministic market shock simulations (-10%, -20%, -30%) with instantaneous loss projections.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800/80 backdrop-blur-sm hover:border-slate-700 transition-colors">
-            <div className="w-9 h-9 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-3">
-              <Layers className="w-5 h-5" />
+          <div className="p-5 rounded-2xl bg-white/90 border-2 border-[#0077b6]/25 backdrop-blur-sm hover:border-[#0077b6] transition-all hover:shadow-lg">
+            <div className="w-10 h-10 rounded-xl bg-[#caf0f8] border border-[#0077b6]/40 flex items-center justify-center text-[#03045e] mb-3 shadow-xs">
+              <Layers className="w-5 h-5 text-[#03045e]" />
             </div>
-            <div className="text-sm font-bold text-white">Capital Optimization</div>
-            <p className="text-xs text-slate-400 mt-1">
+            <div className="text-base font-black text-[#03045e]">Capital Optimization</div>
+            <p className="text-xs text-slate-700 mt-1.5 leading-relaxed font-medium">
               Multi-asset allocation, HHI concentration control, and risk-weighted capital efficiency.
             </p>
           </div>
@@ -179,12 +169,12 @@ export default function WelcomeGetStartedPage() {
       {/* ========================================================================= */}
       {/* 4. FOOTER & COMPLIANCE                                                    */}
       {/* ========================================================================= */}
-      <footer className="relative z-20 w-full flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-slate-500 border-t border-slate-800/80 pt-4 gap-2">
+      <footer className="relative z-20 w-full flex flex-col sm:flex-row items-center justify-between text-xs font-mono text-[#03045e]/80 border-t-2 border-[#0077b6]/25 pt-5 gap-2">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400" />
-          <span>System Online • Book ID #CS-IND-0926</span>
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse" />
+          <span className="font-extrabold text-[#03045e]">System Online • Book ID #CS-IND-0926</span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 text-[#03045e] font-bold">
           <span>Basel III Compliant</span>
           <span>•</span>
           <span>1-Day 95% VaR Engine</span>
@@ -196,3 +186,5 @@ export default function WelcomeGetStartedPage() {
     </div>
   );
 }
+
+
