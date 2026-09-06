@@ -30,7 +30,7 @@ export const DEFAULT_MARKET_OVERVIEW: MarketOverviewData = {
       dayLow: 23895.85,
       volume: 1542000,
       riskStatus: 'NORMAL',
-      timestamp: new Date().toLocaleTimeString()
+      timestamp: 'Live'
     },
     {
       symbol: '^BSESN',
@@ -42,7 +42,7 @@ export const DEFAULT_MARKET_OVERVIEW: MarketOverviewData = {
       dayLow: 78250.00,
       volume: 2150000,
       riskStatus: 'NORMAL',
-      timestamp: new Date().toLocaleTimeString()
+      timestamp: 'Live'
     },
     {
       symbol: '^NSEBANK',
@@ -54,7 +54,7 @@ export const DEFAULT_MARKET_OVERVIEW: MarketOverviewData = {
       dayLow: 51150.00,
       volume: 980000,
       riskStatus: 'NORMAL',
-      timestamp: new Date().toLocaleTimeString()
+      timestamp: 'Live'
     }
   ],
   keyEquities: [
@@ -68,7 +68,7 @@ export const DEFAULT_MARKET_OVERVIEW: MarketOverviewData = {
       dayLow: 2960.00,
       volume: 3450000,
       riskStatus: 'NORMAL',
-      timestamp: new Date().toLocaleTimeString()
+      timestamp: 'Live'
     },
     {
       symbol: 'TCS.NS',
@@ -80,7 +80,7 @@ export const DEFAULT_MARKET_OVERVIEW: MarketOverviewData = {
       dayLow: 4110.00,
       volume: 1250000,
       riskStatus: 'NORMAL',
-      timestamp: new Date().toLocaleTimeString()
+      timestamp: 'Live'
     },
     {
       symbol: 'INFY.NS',
@@ -92,7 +92,7 @@ export const DEFAULT_MARKET_OVERVIEW: MarketOverviewData = {
       dayLow: 1838.00,
       volume: 2100000,
       riskStatus: 'NORMAL',
-      timestamp: new Date().toLocaleTimeString()
+      timestamp: 'Live'
     },
     {
       symbol: 'HDFCBANK.NS',
@@ -104,7 +104,7 @@ export const DEFAULT_MARKET_OVERVIEW: MarketOverviewData = {
       dayLow: 1635.00,
       volume: 4800000,
       riskStatus: 'NORMAL',
-      timestamp: new Date().toLocaleTimeString()
+      timestamp: 'Live'
     },
     {
       symbol: 'ICICIBANK.NS',
@@ -116,7 +116,7 @@ export const DEFAULT_MARKET_OVERVIEW: MarketOverviewData = {
       dayLow: 1200.00,
       volume: 3100000,
       riskStatus: 'NORMAL',
-      timestamp: new Date().toLocaleTimeString()
+      timestamp: 'Live'
     }
   ],
   recentEvents: [
@@ -127,11 +127,11 @@ export const DEFAULT_MARKET_OVERVIEW: MarketOverviewData = {
       marketChange: 0.10,
       volatilityScore: 24.5,
       riskLevel: 'NORMAL',
-      timestamp: new Date().toLocaleTimeString(),
+      timestamp: 'Live',
       details: 'Real-time monitoring active. 8 assets tracked via Yahoo Finance.'
     }
   ],
-  lastUpdated: new Date().toLocaleTimeString(),
+  lastUpdated: 'Live',
   isSimulated: false
 };
 

@@ -127,7 +127,7 @@ export default function DashboardPage() {
       <Sidebar currentTab={currentTab} onSelectTab={setCurrentTab} />
 
       {/* 2. MAIN VIEW AREA */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-white dark:from-[#0a0f1d] dark:via-[#070b14] dark:to-[#04070e] transition-colors">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-white dark:bg-[#070b14] transition-colors">
         {/* TOP HEADER */}
         <Header onTriggerRefresh={handleRefresh} isRefreshing={isRefreshing} />
 
@@ -151,7 +151,7 @@ export default function DashboardPage() {
         <main className="flex-1 overflow-y-auto p-6 space-y-6">
           
           {/* HEADER ROW */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/95 dark:bg-slate-900/60 p-5 rounded-2xl border-2 border-[#0077b6]/25 dark:border-slate-800 shadow-sm backdrop-blur-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border-2 border-[#0077b6]/25 dark:border-slate-800 shadow-sm">
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="text-xl sm:text-2xl font-black text-[#03045e] dark:text-white tracking-tight">
@@ -200,7 +200,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
             {/* REQUIREMENT 1: TOTAL CAPITAL */}
-            <div className="bg-white/95 dark:bg-slate-900/60 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-4.5 hover:border-[#0077b6] dark:hover:border-slate-700 transition-all shadow-sm">
+            <div className="bg-white dark:bg-slate-900 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-4.5 hover:border-[#0077b6] dark:hover:border-slate-700 transition-all shadow-sm">
               <div className="flex justify-between items-start">
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Capital</span>
                 <div className="w-8 h-8 rounded-xl bg-[#caf0f8] dark:bg-indigo-500/10 border border-[#0077b6]/30 dark:border-indigo-500/20 flex items-center justify-center text-[#0077b6] dark:text-indigo-400">
@@ -218,7 +218,7 @@ export default function DashboardPage() {
             </div>
 
             {/* REQUIREMENT 2: COMPOSITE RISK SCORE */}
-            <div className="bg-white/95 dark:bg-slate-900/60 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-4.5 hover:border-[#0077b6] dark:hover:border-slate-700 transition-all shadow-sm">
+            <div className="bg-white dark:bg-slate-900 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-4.5 hover:border-[#0077b6] dark:hover:border-slate-700 transition-all shadow-sm">
               <div className="flex justify-between items-start">
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Composite Risk Score</span>
                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
@@ -249,7 +249,7 @@ export default function DashboardPage() {
             </div>
 
             {/* REQUIREMENT 3: RISK LEVEL */}
-            <div className="bg-white/95 dark:bg-slate-900/60 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-4.5 hover:border-[#0077b6] dark:hover:border-slate-700 transition-all shadow-sm">
+            <div className="bg-white dark:bg-slate-900 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-4.5 hover:border-[#0077b6] dark:hover:border-slate-700 transition-all shadow-sm">
               <div className="flex justify-between items-start">
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Risk Level & Posture</span>
                 <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-300 dark:border-emerald-500/20 flex items-center justify-center text-emerald-700 dark:text-emerald-400">
@@ -276,7 +276,7 @@ export default function DashboardPage() {
             </div>
 
             {/* REQUIREMENT 4: LIQUIDITY */}
-            <div className="bg-white/95 dark:bg-slate-900/60 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-4.5 hover:border-[#0077b6] dark:hover:border-slate-700 transition-all shadow-sm">
+            <div className="bg-white dark:bg-slate-900 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-4.5 hover:border-[#0077b6] dark:hover:border-slate-700 transition-all shadow-sm">
               <div className="flex justify-between items-start">
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Instant Liquidity</span>
                 <div className="w-8 h-8 rounded-xl bg-[#caf0f8] dark:bg-cyan-500/10 border border-[#0077b6]/30 dark:border-cyan-500/20 flex items-center justify-center text-[#0077b6] dark:text-cyan-400">
@@ -302,7 +302,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* REQUIREMENT 5: ALLOCATION CHART (7 cols) */}
-            <div className="lg:col-span-7 bg-white/95 dark:bg-slate-900/60 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+            <div className="lg:col-span-7 bg-white dark:bg-slate-900 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <PieChart className="w-4 h-4 text-[#0077b6] dark:text-indigo-400" />
@@ -371,7 +371,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Quick Governance & Capital Optimization Callout (5 cols) */}
-            <div className="lg:col-span-5 bg-white/95 dark:bg-slate-900/60 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-sm">
+            <div className="lg:col-span-5 bg-white dark:bg-slate-900 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-sm">
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
@@ -422,7 +422,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* REQUIREMENT 6: ACTIVE ALERTS (6 cols) */}
-            <div className="lg:col-span-6 bg-white/95 dark:bg-slate-900/60 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+            <div className="lg:col-span-6 bg-white dark:bg-slate-900 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4 border-b border-[#0077b6]/20 dark:border-slate-800 pb-3">
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 text-amber-500" />
@@ -486,7 +486,7 @@ export default function DashboardPage() {
             </div>
 
             {/* REQUIREMENT 7: RECENT DECISIONS (6 cols) */}
-            <div className="lg:col-span-6 bg-white/95 dark:bg-slate-900/60 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+            <div className="lg:col-span-6 bg-white dark:bg-slate-900 border-2 border-[#0077b6]/25 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4 border-b border-[#0077b6]/20 dark:border-slate-800 pb-3">
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-[#0077b6] dark:text-indigo-400" />

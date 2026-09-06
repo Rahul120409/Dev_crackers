@@ -146,7 +146,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
             </div>
           </div>
         ) : (
-          <div className="py-2.5 flex justify-center border-b border-[#0077b6]/20 dark:border-slate-800/60 bg-[#caf0f8]/30 dark:bg-slate-950/40" title="Apex Commercial Bank - Basel III Active">
+          <div className="py-2.5 flex justify-center border-b border-[#0077b6]/20 dark:border-slate-800/60 bg-[#caf0f8]/30 dark:bg-slate-950/40" title="">
             <div className="w-2.5 h-2.5 rounded-full bg-[#0077b6] ring-4 ring-[#caf0f8] animate-pulse" />
           </div>
         )}
@@ -194,12 +194,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
                   {isOpen && item.badge && (
                     <span
                       className={`text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0 ${isActive
-                          ? 'bg-white/20 text-white'
-                          : item.badge === 'Live'
-                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30'
-                            : item.badge === 'Golden Demo'
-                              ? 'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-300 border border-red-300 dark:border-red-500/30'
-                              : 'bg-[#caf0f8] text-[#03045e] dark:bg-[#caf0f8]/20 dark:text-[#caf0f8] border border-[#0077b6]/30 dark:border-[#caf0f8]/30'
+                        ? 'bg-white/20 text-white'
+                        : item.badge === 'Live'
+                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30'
+                          : item.badge === 'Golden Demo'
+                            ? 'bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-300 border border-red-300 dark:border-red-500/30'
+                            : 'bg-[#caf0f8] text-[#03045e] dark:bg-[#caf0f8]/20 dark:text-[#caf0f8] border border-[#0077b6]/30 dark:border-[#caf0f8]/30'
                         }`}
                     >
                       {item.badge}
@@ -210,10 +210,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
                   {!isOpen && item.badge && (
                     <span
                       className={`absolute top-1.5 right-1.5 w-2 h-2 rounded-full ${item.badge === 'Live'
-                          ? 'bg-emerald-500 ring-2 ring-white dark:ring-emerald-950'
-                          : item.badge === 'Golden Demo'
-                            ? 'bg-red-500 ring-2 ring-white dark:ring-red-950'
-                            : 'bg-[#0077b6] ring-2 ring-white dark:ring-cyan-950'
+                        ? 'bg-emerald-500 ring-2 ring-white dark:ring-emerald-950'
+                        : item.badge === 'Golden Demo'
+                          ? 'bg-red-500 ring-2 ring-white dark:ring-red-950'
+                          : 'bg-[#0077b6] ring-2 ring-white dark:ring-cyan-950'
                         }`}
                     />
                   )}

@@ -187,7 +187,7 @@ export default function PortfolioPage() {
       <Sidebar currentTab="portfolio" onSelectTab={handleSelectTab} />
 
       {/* 2. MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-white dark:from-[#0a0f1d] dark:via-[#070b14] dark:to-[#04070e] transition-colors">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-white dark:bg-[#070b14] transition-colors">
         {/* TOP HEADER */}
         <Header onTriggerRefresh={handleRefresh} isRefreshing={isRefreshing} />
 
@@ -213,7 +213,7 @@ export default function PortfolioPage() {
           {/* ========================================================================= */}
           {/* PAGE TITLE BAR & USER INPUT ACTIONS                                        */}
           {/* ========================================================================= */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/95 dark:bg-slate-900/60 p-5 rounded-2xl border-2 border-[#0077b6]/25 dark:border-slate-800 shadow-sm backdrop-blur-sm">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border-2 border-[#0077b6]/25 dark:border-slate-800 shadow-sm">
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
                 <h1 className="text-xl sm:text-2xl font-black text-[#03045e] dark:text-white tracking-tight">

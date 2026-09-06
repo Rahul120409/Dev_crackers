@@ -31,6 +31,10 @@ public class OptimizationService {
     private final RebalancingCostModel costModel;
     private final OptimizationLogRepository logRepository;
 
+    public OptimizationService() {
+        this(null, null, null, null);
+    }
+
     public OptimizationService(
             OptimizationEngine optimizationEngine,
             RebalanceCalculator rebalanceCalculator,
@@ -43,7 +47,7 @@ public class OptimizationService {
             OptimizationEngine optimizationEngine,
             RebalanceCalculator rebalanceCalculator,
             RebalancingCostModel costModel,
-            @Autowired(required = false) OptimizationLogRepository logRepository) {
+            OptimizationLogRepository logRepository) {
         this.optimizationEngine = optimizationEngine;
         this.rebalanceCalculator = rebalanceCalculator;
         this.costModel = costModel;

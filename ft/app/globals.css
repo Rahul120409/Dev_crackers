@@ -64,10 +64,101 @@ html.light, html:not(.dark) {
   --sidebar-border: #caf0f8;
 }
 
+/* Seamless main views without rectangular color boxes */
 html.light main,
 html:not(.dark) main {
   color: #03045e;
-  background-color: #ffffff;
+  background-color: transparent !important;
+}
+
+html.dark main,
+html[data-theme="dark"] main {
+  color: #f8fafc !important;
+  background-color: transparent !important;
+}
+
+main,
+main.bg-transparent,
+html.dark main.bg-transparent,
+html[data-theme="dark"] main.bg-transparent,
+html.light main.bg-transparent,
+html:not(.dark) main.bg-transparent {
+  background-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html.dark [class*="dark:from-[#0a0f1d]"],
+html[data-theme="dark"] [class*="dark:from-[#0a0f1d]"] {
+  background-color: #070b14 !important;
+  background-image: none !important;
+}
+
+html.dark,
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Institutional Dark Theme Surfaces, Cards & Borders */
+html.dark [class*="dark:bg-[#040d21]"],
+html[data-theme="dark"] [class*="dark:bg-[#040d21]"],
+html.dark [class*="dark:bg-[#010308]"],
+html[data-theme="dark"] [class*="dark:bg-[#010308]"] {
+  background-color: #040d21 !important;
+}
+
+html.dark input,
+html[data-theme="dark"] input {
+  color: #ffffff;
+}
+
+html.dark input[class*="dark:bg-slate-950"],
+html[data-theme="dark"] input[class*="dark:bg-slate-950"],
+html.dark select[class*="dark:bg-slate-950"],
+html[data-theme="dark"] select[class*="dark:bg-slate-950"] {
+  background-color: #020617 !important;
+  color: #ffffff !important;
+  border-color: #1e293b !important;
+}
+
+html.dark [class*="dark:bg-slate-900"],
+html.dark [class*="dark:bg-slate-950"],
+html.dark [class*="dark:bg-slate-800"],
+html[data-theme="dark"] [class*="dark:bg-slate-900"],
+html[data-theme="dark"] [class*="dark:bg-slate-950"],
+html[data-theme="dark"] [class*="dark:bg-slate-800"],
+html.dark [class*="bg-slate-900"],
+html.dark [class*="bg-slate-950"],
+html.dark [class*="bg-slate-800"] {
+  background-color: #0f172a !important;
+  border-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+html.dark [class*="dark:border-slate-800"],
+html[data-theme="dark"] [class*="dark:border-slate-800"],
+html.dark [class*="dark:border-slate-700"],
+html[data-theme="dark"] [class*="dark:border-slate-700"] {
+  border-color: #1e293b !important;
+}
+
+html.dark [class*="dark:text-white"],
+html[data-theme="dark"] [class*="dark:text-white"] {
+  color: #ffffff !important;
+}
+
+html.dark [class*="dark:text-slate-100"],
+html.dark [class*="dark:text-slate-200"],
+html[data-theme="dark"] [class*="dark:text-slate-100"],
+html[data-theme="dark"] [class*="dark:text-slate-200"] {
+  color: #e2e8f0 !important;
+}
+
+html.dark [class*="dark:text-slate-300"],
+html.dark [class*="dark:text-slate-400"],
+html[data-theme="dark"] [class*="dark:text-slate-300"],
+html[data-theme="dark"] [class*="dark:text-slate-400"] {
+  color: #94a3b8 !important;
 }
 
 /* Light Mode Card & Surface Backgrounds: #FFFFFF */
@@ -306,4 +397,3 @@ html.dark ::-webkit-scrollbar-thumb {
 html.dark ::-webkit-scrollbar-thumb:hover {
   background: #90e0ef;
 }
-

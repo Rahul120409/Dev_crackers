@@ -15,25 +15,18 @@ const THEME_STORAGE_KEY = 'capitalguard_theme';
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Default to light mode as requested by user
-  const [theme, setThemeState] = useState<Theme>('light');
+  // Always initialize in institutional dark mode when opened
+  const [theme, setThemeState] = useState<Theme>('dark');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Always start in dark mode when opened / reloaded
+    setThemeState('dark');
+    applyThemeClass('dark');
     try {
-      const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme;
-      if (stored === 'light' || stored === 'dark') {
-        setThemeState(stored);
-        applyThemeClass(stored);
-      } else {
-        setThemeState('light');
-        applyThemeClass('light');
-      }
-    } catch (e) {
-      applyThemeClass('light');
-    } finally {
-      setMounted(true);
-    }
+      localStorage.setItem(THEME_STORAGE_KEY, 'dark');
+    } catch (e) {}
+    setMounted(true);
   }, []);
 
   const applyThemeClass = (newTheme: Theme) => {

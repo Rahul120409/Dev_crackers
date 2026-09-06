@@ -34,6 +34,7 @@ export const MarketIntelligenceView: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [simulating, setSimulating] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'indices' | 'equities'>('indices');
+  const [mounted, setMounted] = useState<boolean>(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -46,6 +47,7 @@ export const MarketIntelligenceView: React.FC = () => {
   };
 
   useEffect(() => {
+    setMounted(true);
     loadData();
     const interval = setInterval(() => {
       loadData();
@@ -346,8 +348,8 @@ export const MarketIntelligenceView: React.FC = () => {
                 <span className="text-[11px] font-mono text-indigo-400 uppercase tracking-wider">Live Trend Chart</span>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
                   {chartSymbol} Trend Analysis
-                  <span className="text-xs font-mono font-normal text-slate-400">
-                    (Refreshed {data.lastUpdated})
+                  <span suppressHydrationWarning className="text-xs font-mono font-normal text-slate-400">
+                    ({mounted && data.lastUpdated !== 'Live' ? `Refreshed ${data.lastUpdated}` : 'Live Real-time'})
                   </span>
                 </h3>
               </div>
@@ -410,7 +412,7 @@ export const MarketIntelligenceView: React.FC = () => {
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold tracking-tight">{evt.eventType}</span>
-                        <span className="text-[10px] font-mono text-slate-400">{evt.timestamp}</span>
+                        <span suppressHydrationWarning className="text-[10px] font-mono text-slate-400">{evt.timestamp}</span>
                       </div>
                       <p className="text-xs font-medium">{evt.details}</p>
                       <div className="flex items-center gap-4 text-[10px] font-mono text-slate-400 pt-1">

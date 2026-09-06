@@ -51,41 +51,41 @@ export default function SplashScreen() {
 
   return (
     <div
-      className="fixed inset-0 w-screen h-screen bg-white dark:bg-[#010308] text-slate-900 dark:text-slate-100 flex flex-col justify-between p-6 sm:p-10 select-none overflow-hidden font-sans antialiased transition-colors duration-300"
+      className="fixed inset-0 w-screen h-screen bg-white dark:bg-[#040d21] text-slate-900 dark:text-slate-100 flex flex-col justify-between p-6 sm:p-10 select-none overflow-hidden font-sans antialiased transition-colors duration-300"
     >
-      {/* Ambient Glows (No harsh grid lines) */}
+      {/* Ambient Glows */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1100px] h-[750px] bg-gradient-to-b from-[#caf0f8]/40 via-[#caf0f8]/20 to-transparent rounded-full blur-[150px]" />
-        <div className="absolute -top-32 left-1/4 w-[500px] h-[500px] bg-[#caf0f8]/30 dark:bg-indigo-700/15 rounded-full blur-[130px]" />
-        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#caf0f8]/30 dark:bg-[#0077b6]/15 rounded-full blur-[130px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1100px] h-[750px] bg-gradient-to-b from-[#caf0f8]/40 via-[#caf0f8]/20 to-transparent dark:from-cyan-500/10 dark:via-transparent dark:to-transparent rounded-full blur-[150px]" />
+        <div className="absolute -top-32 left-1/4 w-[500px] h-[500px] bg-[#caf0f8]/30 dark:bg-indigo-500/15 rounded-full blur-[130px]" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#caf0f8]/30 dark:bg-cyan-500/15 rounded-full blur-[130px]" />
       </div>
 
       {/* Top Header */}
-      <div className="relative z-30 w-full flex items-center justify-between text-[11px] font-mono tracking-widest text-slate-500">
+      <div className="relative z-30 w-full flex items-center justify-between text-[11px] font-mono tracking-widest text-slate-500 dark:text-slate-400">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0077b6] to-[#03045e] dark:bg-indigo-500/20 border-2 border-[#caf0f8] flex items-center justify-center text-white dark:text-cyan-400 shadow-md">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0077b6] to-[#03045e] dark:from-cyan-600 dark:to-blue-700 border-2 border-[#caf0f8] dark:border-cyan-500/30 flex items-center justify-center text-white shadow-md">
             <Shield className="w-4 h-4 text-white" />
           </div>
-          <span className="font-extrabold text-[#03045e] dark:text-slate-100 tracking-[0.2em] text-xs">CAPITALGUARD</span>
-          <span className="hidden sm:inline text-[#0077b6] dark:text-slate-500 font-bold">/ INSTITUTIONAL OS</span>
+          <span className="font-extrabold text-[#03045e] dark:text-white tracking-[0.2em] text-xs">CAPITALGUARD</span>
+          <span className="hidden sm:inline text-[#0077b6] dark:text-cyan-400 font-bold">/ INSTITUTIONAL OS</span>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className={`w-2.5 h-2.5 rounded-full ${isReady ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-[#0077b6] animate-pulse shadow-[0_0_8px_#0077b6]'}`} />
+          <span className={`w-2.5 h-2.5 rounded-full ${isReady ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-[#0077b6] dark:bg-cyan-400 animate-pulse shadow-[0_0_8px_#0077b6]'}`} />
           <span className="tracking-widest text-[#03045e] dark:text-slate-300 font-black">
             {isReady ? 'SYSTEM READY' : `INITIALIZING (${progress}%)`}
           </span>
           {isReady ? (
             <button
               onClick={handleProceed}
-              className="text-xs text-white bg-[#03045e] hover:bg-[#0077b6] font-black px-4 py-1.5 rounded-xl border-2 border-[#caf0f8] shadow-md transition-all cursor-pointer flex items-center gap-2 hover:scale-105"
+              className="text-xs text-white bg-[#03045e] hover:bg-[#0077b6] dark:bg-gradient-to-r dark:from-cyan-600 dark:to-blue-600 dark:hover:from-cyan-500 dark:hover:to-blue-500 font-black px-4 py-1.5 rounded-xl border-2 border-[#caf0f8] dark:border-cyan-400/40 shadow-md transition-all cursor-pointer flex items-center gap-2 hover:scale-105"
             >
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#caf0f8]" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#caf0f8] dark:text-white" />
               <span>ACCESS GRANTED</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 text-white" />
             </button>
           ) : (
-            <span className="text-[10px] text-[#03045e] bg-white font-bold px-3 py-1 rounded-lg border-2 border-[#caf0f8] shadow-xs">
+            <span className="text-[10px] text-[#03045e] dark:text-slate-300 bg-white dark:bg-slate-900 font-bold px-3 py-1 rounded-lg border-2 border-[#caf0f8] dark:border-slate-800 shadow-xs">
               Loading Protocols...
             </span>
           )}
@@ -101,33 +101,41 @@ export default function SplashScreen() {
         >
           <svg className="w-full h-full overflow-visible" viewBox="0 0 600 680">
             <defs>
-              <linearGradient id="gateGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient id="gateGlowLight" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#0077b6" stopOpacity="0.8" />
                 <stop offset="50%" stopColor="#00b4d8" stopOpacity="0.5" />
                 <stop offset="100%" stopColor="#03045e" stopOpacity="0.9" />
               </linearGradient>
-              <linearGradient id="innerGate" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient id="gateGlowDark" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.7" />
+                <stop offset="50%" stopColor="#3b82f6" stopOpacity="0.5" />
+                <stop offset="100%" stopColor="#6366f1" stopOpacity="0.8" />
+              </linearGradient>
+              <linearGradient id="innerGateLight" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#ffffff" stopOpacity="0.7" />
                 <stop offset="100%" stopColor="#caf0f8" stopOpacity="0.4" />
+              </linearGradient>
+              <linearGradient id="innerGateDark" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#0f172a" stopOpacity="0.7" />
+                <stop offset="100%" stopColor="#020617" stopOpacity="0.5" />
               </linearGradient>
             </defs>
             <path
               d="M 300 40 L 530 140 L 490 440 Q 440 580 300 640 Q 160 580 110 440 L 70 140 Z"
-              fill="url(#innerGate)"
-              stroke="url(#gateGlow)"
+              className="fill-[url(#innerGateLight)] dark:fill-[url(#innerGateDark)] stroke-[url(#gateGlowLight)] dark:stroke-[url(#gateGlowDark)]"
               strokeWidth="2.5"
             />
             <path
               d="M 300 80 L 480 165 L 445 420 Q 400 535 300 585 Q 200 535 155 420 L 120 165 Z"
               fill="none"
-              stroke="#0077b6"
+              className="stroke-[#0077b6] dark:stroke-cyan-500/50"
               strokeWidth="1.5"
               strokeDasharray="8 6"
               opacity="0.8"
             />
-            <line x1="300" y1="40" x2="300" y2="640" stroke="#0077b6" strokeWidth="1" strokeDasharray="3 4" opacity="0.6" />
-            <circle cx="300" cy="40" r="6" fill="#03045e" stroke="#00b4d8" strokeWidth="2" />
-            <circle cx="300" cy="40" r="3" fill="#caf0f8" />
+            <line x1="300" y1="40" x2="300" y2="640" className="stroke-[#0077b6] dark:stroke-cyan-500/40" strokeWidth="1" strokeDasharray="3 4" opacity="0.6" />
+            <circle cx="300" cy="40" r="6" className="fill-[#03045e] dark:fill-cyan-500 stroke-[#00b4d8] dark:stroke-cyan-300" strokeWidth="2" />
+            <circle cx="300" cy="40" r="3" className="fill-[#caf0f8] dark:fill-white" />
           </svg>
         </div>
 
@@ -136,16 +144,16 @@ export default function SplashScreen() {
             animStage >= 4 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
           }`}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border-2 border-[#caf0f8] text-[#0077b6] dark:text-cyan-400 text-[11px] font-mono font-black uppercase mb-2 shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#0077b6]" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-slate-900/90 border-2 border-[#caf0f8] dark:border-slate-800 text-[#0077b6] dark:text-cyan-300 text-[11px] font-mono font-black uppercase mb-2 shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#0077b6] dark:text-cyan-400" />
             FINANCIAL COMMAND & CONTROL SYSTEM
           </div>
 
-          <div className="text-5xl sm:text-7xl md:text-8xl lg:text-[105px] font-black tracking-[-0.03em] text-[#03045e] dark:text-white leading-[0.88] uppercase drop-shadow-[0_4px_20px_rgba(0,119,182,0.15)]">
+          <div className="text-5xl sm:text-7xl md:text-8xl lg:text-[105px] font-black tracking-[-0.03em] text-[#03045e] dark:text-white leading-[0.88] uppercase drop-shadow-[0_4px_20px_rgba(0,119,182,0.15)] dark:drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]">
             CAPITAL
           </div>
 
-          <div className="text-5xl sm:text-7xl md:text-8xl lg:text-[105px] font-black tracking-[-0.03em] text-transparent bg-clip-text bg-gradient-to-b from-[#0077b6] via-[#0096c7] to-[#03045e] dark:from-slate-100 dark:via-slate-300 dark:to-cyan-400 leading-[0.88] uppercase drop-shadow-[0_4px_20px_rgba(0,119,182,0.2)]">
+          <div className="text-5xl sm:text-7xl md:text-8xl lg:text-[105px] font-black tracking-[-0.03em] text-transparent bg-clip-text bg-gradient-to-b from-[#0077b6] via-[#0096c7] to-[#03045e] dark:from-slate-100 dark:via-cyan-200 dark:to-cyan-400 leading-[0.88] uppercase drop-shadow-[0_4px_20px_rgba(0,119,182,0.2)]">
             GUARD
           </div>
 
@@ -162,9 +170,9 @@ export default function SplashScreen() {
             <button
               id="splash-access-granted-button"
               onClick={handleProceed}
-              className="w-full py-4 px-6 rounded-2xl bg-[#03045e] hover:bg-[#0077b6] text-white font-black text-sm tracking-widest uppercase border-2 border-[#caf0f8] shadow-[0_10px_30px_rgba(3,4,94,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer ring-4 ring-[#caf0f8]"
+              className="w-full py-4 px-6 rounded-2xl bg-[#03045e] hover:bg-[#0077b6] dark:bg-gradient-to-r dark:from-cyan-600 dark:to-blue-600 dark:hover:from-cyan-500 dark:hover:to-blue-500 text-white font-black text-sm tracking-widest uppercase border-2 border-[#caf0f8] dark:border-cyan-400/40 shadow-[0_10px_30px_rgba(3,4,94,0.3)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.8)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer ring-4 ring-[#caf0f8] dark:ring-cyan-500/20"
             >
-              <CheckCircle2 className="w-5 h-5 text-[#caf0f8]" />
+              <CheckCircle2 className="w-5 h-5 text-[#caf0f8] dark:text-white" />
               <span>ACCESS GRANTED</span>
               <ArrowRight className="w-5 h-5 text-white" />
             </button>
@@ -175,16 +183,16 @@ export default function SplashScreen() {
               <span>INITIALIZING SECURE PROTOCOLS</span>
               <span className="text-[#03045e] dark:text-cyan-400 font-black">{progress}%</span>
             </div>
-            <div className="w-full h-2.5 bg-white dark:bg-slate-900 rounded-full overflow-hidden border-2 border-[#caf0f8] dark:border-slate-800/80 shadow-inner">
+            <div className="w-full h-2.5 bg-white dark:bg-slate-950 rounded-full overflow-hidden border-2 border-[#caf0f8] dark:border-slate-800 shadow-inner">
               <div
-                className="h-full bg-gradient-to-r from-[#03045e] via-[#0077b6] to-[#00b4d8] dark:from-blue-500 dark:via-cyan-400 dark:to-white transition-all duration-75 ease-out shadow-[0_0_10px_rgba(0,119,182,0.8)]"
+                className="h-full bg-gradient-to-r from-[#03045e] via-[#0077b6] to-[#00b4d8] dark:from-cyan-500 dark:via-blue-500 dark:to-cyan-300 transition-all duration-75 ease-out shadow-[0_0_10px_rgba(0,119,182,0.8)] dark:shadow-[0_0_10px_rgba(6,182,212,0.8)]"
                 style={{ width: `${progress}%` }}
               />
             </div>
           </div>
         )}
 
-        <div className="text-[10px] font-mono text-[#0077b6] dark:text-slate-500 tracking-wider pt-3 flex items-center gap-2 font-bold">
+        <div className="text-[10px] font-mono text-[#0077b6] dark:text-slate-400 tracking-wider pt-3 flex items-center gap-2 font-bold">
           <span>APEX TREASURY BANK</span>
           <span>•</span>
           <span>ENTERPRISE GRADE</span>

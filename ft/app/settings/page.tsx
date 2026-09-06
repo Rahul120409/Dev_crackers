@@ -33,11 +33,11 @@ export default function SettingsPage() {
 
   const [currentTab, setCurrentTab] = useState('settings');
   const [activeSection, setActiveSection] = useState<'profile' | 'limits' | 'automation' | 'connectivity'>('limits');
-  
+
   // Risk Limits state
   const [limits, setLimits] = useState<RiskLimits | null>(null);
   const [isSavingLimits, setIsSavingLimits] = useState(false);
-  
+
   // Automation settings
   const [autoRebalance, setAutoRebalance] = useState(true);
   const [emailAlerts, setEmailAlerts] = useState(true);
@@ -126,33 +126,29 @@ export default function SettingsPage() {
           <div className="flex bg-slate-950/80 p-1 rounded-lg border border-slate-800 text-xs font-medium">
             <button
               onClick={() => setActiveSection('limits')}
-              className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
-                activeSection === 'limits' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
-              }`}
+              className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${activeSection === 'limits' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                }`}
             >
               Risk Limits
             </button>
             <button
               onClick={() => setActiveSection('automation')}
-              className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
-                activeSection === 'automation' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
-              }`}
+              className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${activeSection === 'automation' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                }`}
             >
               Safeguard Automation
             </button>
             <button
               onClick={() => setActiveSection('profile')}
-              className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
-                activeSection === 'profile' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
-              }`}
+              className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${activeSection === 'profile' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                }`}
             >
               Officer Identity
             </button>
             <button
               onClick={() => setActiveSection('connectivity')}
-              className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
-                activeSection === 'connectivity' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
-              }`}
+              className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${activeSection === 'connectivity' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                }`}
             >
               API Telemetry
             </button>
@@ -169,7 +165,7 @@ export default function SettingsPage() {
 
         {/* Scrollable Main Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          
+
           {/* ===================================================================== */}
           {/* SECTION: RISK LIMITS                                                 */}
           {/* ===================================================================== */}
@@ -321,14 +317,12 @@ export default function SettingsPage() {
                   </div>
                   <button
                     onClick={() => setAutoRebalance(!autoRebalance)}
-                    className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${
-                      autoRebalance ? 'bg-indigo-600' : 'bg-slate-700'
-                    }`}
+                    className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${autoRebalance ? 'bg-indigo-600' : 'bg-slate-700'
+                      }`}
                   >
                     <span
-                      className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${
-                        autoRebalance ? 'left-7' : 'left-1'
-                      }`}
+                      className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${autoRebalance ? 'left-7' : 'left-1'
+                        }`}
                     />
                   </button>
                 </div>
@@ -342,14 +336,12 @@ export default function SettingsPage() {
                   </div>
                   <button
                     onClick={() => setEmailAlerts(!emailAlerts)}
-                    className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${
-                      emailAlerts ? 'bg-indigo-600' : 'bg-slate-700'
-                    }`}
+                    className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${emailAlerts ? 'bg-indigo-600' : 'bg-slate-700'
+                      }`}
                   >
                     <span
-                      className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${
-                        emailAlerts ? 'left-7' : 'left-1'
-                      }`}
+                      className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${emailAlerts ? 'left-7' : 'left-1'
+                        }`}
                     />
                   </button>
                 </div>
@@ -363,14 +355,12 @@ export default function SettingsPage() {
                   </div>
                   <button
                     onClick={() => setCriticalHedge(!criticalHedge)}
-                    className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${
-                      criticalHedge ? 'bg-indigo-600' : 'bg-slate-700'
-                    }`}
+                    className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${criticalHedge ? 'bg-indigo-600' : 'bg-slate-700'
+                      }`}
                   >
                     <span
-                      className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${
-                        criticalHedge ? 'left-7' : 'left-1'
-                      }`}
+                      className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${criticalHedge ? 'left-7' : 'left-1'
+                        }`}
                     />
                   </button>
                 </div>
@@ -411,7 +401,7 @@ export default function SettingsPage() {
 
                 <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
                   <span className="text-slate-400 block mb-1">Financial Institution:</span>
-                  <div className="text-base font-bold text-white">{user?.institution || 'Apex Commercial Bank Ltd.'}</div>
+                  <div className="text-base font-bold text-white">{user?.institution || ''}</div>
                 </div>
               </div>
 
