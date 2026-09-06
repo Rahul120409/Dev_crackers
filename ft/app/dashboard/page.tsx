@@ -98,12 +98,12 @@ export default function DashboardPage() {
   const isCriticalRisk = riskLevel === 'CRITICAL' || riskScore > 70;
 
   return (
-    <div className="flex h-screen bg-[#caf0f8] dark:bg-[#070b14] text-[#03045e] dark:text-slate-100 font-sans overflow-hidden transition-colors">
+    <div className="flex h-screen bg-white dark:bg-[#070b14] text-[#03045e] dark:text-slate-100 font-sans overflow-hidden transition-colors">
       {/* 1. LEFT SIDEBAR */}
       <Sidebar currentTab={currentTab} onSelectTab={setCurrentTab} />
 
       {/* 2. MAIN VIEW AREA */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-gradient-to-b from-[#caf0f8] via-[#def6fa] to-[#c2eff7] dark:from-[#0a0f1d] dark:via-[#070b14] dark:to-[#04070e] transition-colors">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-white dark:from-[#0a0f1d] dark:via-[#070b14] dark:to-[#04070e] transition-colors">
         {/* TOP HEADER */}
         <Header onTriggerRefresh={handleRefresh} isRefreshing={isRefreshing} />
 
