@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Shield, Sparkles } from 'lucide-react';
+import { Shield, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
 
 export default function SplashScreen() {
   const router = useRouter();
@@ -28,7 +28,7 @@ export default function SplashScreen() {
         }
         return prev + 5;
       });
-    }, 40);
+    }, 35);
 
     return () => {
       clearTimeout(t1);
@@ -39,37 +39,31 @@ export default function SplashScreen() {
     };
   }, [router]);
 
-  // Handle auto-redirect once progress completes
-  useEffect(() => {
-    if (progress >= 100) {
-      const redirectTimer = setTimeout(() => {
-        router.push('/welcome');
-      }, 100);
-      return () => clearTimeout(redirectTimer);
-    }
-  }, [progress, router]);
-
-  // Click anywhere to skip directly to /welcome
+  // Click handler: strictly requires explicit click to proceed
   const handleProceed = () => {
-    router.push('/welcome');
+    try {
+      router.push('/welcome');
+    } catch {}
+    window.location.assign('/welcome');
   };
+
+  const isReady = progress >= 100;
 
   return (
     <div
-      onClick={handleProceed}
-      className="fixed inset-0 w-screen h-screen bg-gradient-to-br from-[#caf0f8] via-[#def6fa] to-[#c2eff7] dark:bg-[#010308] text-slate-900 dark:text-slate-100 flex flex-col justify-between p-6 sm:p-10 select-none overflow-hidden font-sans antialiased cursor-pointer transition-colors duration-300"
+      className="fixed inset-0 w-screen h-screen bg-white dark:bg-[#010308] text-slate-900 dark:text-slate-100 flex flex-col justify-between p-6 sm:p-10 select-none overflow-hidden font-sans antialiased transition-colors duration-300"
     >
       {/* Ambient Glows (No harsh grid lines) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1100px] h-[750px] bg-gradient-to-b from-[#0077b6]/20 via-[#00b4d8]/15 to-transparent rounded-full blur-[150px]" />
-        <div className="absolute -top-32 left-1/4 w-[500px] h-[500px] bg-white/50 dark:bg-indigo-700/15 rounded-full blur-[130px]" />
-        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#90e0ef]/50 dark:bg-[#0077b6]/15 rounded-full blur-[130px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1100px] h-[750px] bg-gradient-to-b from-[#caf0f8]/40 via-[#caf0f8]/20 to-transparent rounded-full blur-[150px]" />
+        <div className="absolute -top-32 left-1/4 w-[500px] h-[500px] bg-[#caf0f8]/30 dark:bg-indigo-700/15 rounded-full blur-[130px]" />
+        <div className="absolute bottom-10 right-1/4 w-[550px] h-[550px] bg-[#caf0f8]/30 dark:bg-[#0077b6]/15 rounded-full blur-[130px]" />
       </div>
 
       {/* Top Header */}
       <div className="relative z-30 w-full flex items-center justify-between text-[11px] font-mono tracking-widest text-slate-500">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0077b6] to-[#03045e] dark:bg-indigo-500/20 border border-[#0077b6]/40 flex items-center justify-center text-white dark:text-cyan-400 shadow-md">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0077b6] to-[#03045e] dark:bg-indigo-500/20 border-2 border-[#caf0f8] flex items-center justify-center text-white dark:text-cyan-400 shadow-md">
             <Shield className="w-4 h-4 text-white" />
           </div>
           <span className="font-extrabold text-[#03045e] dark:text-slate-100 tracking-[0.2em] text-xs">CAPITALGUARD</span>
@@ -77,13 +71,24 @@ export default function SplashScreen() {
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#0077b6] dark:bg-cyan-400 animate-pulse shadow-[0_0_8px_#0077b6]" />
+          <span className={`w-2.5 h-2.5 rounded-full ${isReady ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-[#0077b6] animate-pulse shadow-[0_0_8px_#0077b6]'}`} />
           <span className="tracking-widest text-[#03045e] dark:text-slate-300 font-black">
-            INITIALIZING ({progress}%)
+            {isReady ? 'SYSTEM READY' : `INITIALIZING (${progress}%)`}
           </span>
-          <span className="text-[10px] text-white bg-[#03045e] hover:bg-[#0077b6] dark:text-indigo-300 dark:bg-slate-900/80 font-bold px-3 py-1 rounded-lg border border-[#0077b6]/30 shadow-xs transition-colors">
-            Auto Redirecting...
-          </span>
+          {isReady ? (
+            <button
+              onClick={handleProceed}
+              className="text-xs text-white bg-[#03045e] hover:bg-[#0077b6] font-black px-4 py-1.5 rounded-xl border-2 border-[#caf0f8] shadow-md transition-all cursor-pointer flex items-center gap-2 hover:scale-105"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#caf0f8]" />
+              <span>ACCESS GRANTED</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <span className="text-[10px] text-[#03045e] bg-white font-bold px-3 py-1 rounded-lg border-2 border-[#caf0f8] shadow-xs">
+              Loading Protocols...
+            </span>
+          )}
         </div>
       </div>
 
@@ -131,7 +136,7 @@ export default function SplashScreen() {
             animStage >= 4 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
           }`}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-[#0077b6]/30 text-[#0077b6] dark:text-cyan-400 text-[11px] font-mono font-black uppercase mb-2 shadow-xs">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border-2 border-[#caf0f8] text-[#0077b6] dark:text-cyan-400 text-[11px] font-mono font-black uppercase mb-2 shadow-xs">
             <Sparkles className="w-3.5 h-3.5 text-[#0077b6]" />
             FINANCIAL COMMAND & CONTROL SYSTEM
           </div>
@@ -150,20 +155,34 @@ export default function SplashScreen() {
         </div>
       </div>
 
-      {/* Bottom Progress Bar */}
+      {/* Bottom Action Area: Progress bar during load, ACCESS GRANTED button when loaded */}
       <div className="relative z-30 w-full max-w-lg mx-auto flex flex-col items-center pb-2">
-        <div className="w-full space-y-2">
-          <div className="flex items-center justify-between w-full text-[10px] font-mono tracking-widest text-[#0077b6] dark:text-slate-400 font-bold">
-            <span>AUTOMATICALLY OPENING CAPITALGUARD</span>
-            <span className="text-[#03045e] dark:text-cyan-400 font-black">{progress}%</span>
+        {isReady ? (
+          <div className="w-full flex flex-col items-center space-y-2 animate-in fade-in zoom-in-95 duration-300">
+            <button
+              id="splash-access-granted-button"
+              onClick={handleProceed}
+              className="w-full py-4 px-6 rounded-2xl bg-[#03045e] hover:bg-[#0077b6] text-white font-black text-sm tracking-widest uppercase border-2 border-[#caf0f8] shadow-[0_10px_30px_rgba(3,4,94,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer ring-4 ring-[#caf0f8]"
+            >
+              <CheckCircle2 className="w-5 h-5 text-[#caf0f8]" />
+              <span>ACCESS GRANTED</span>
+              <ArrowRight className="w-5 h-5 text-white" />
+            </button>
           </div>
-          <div className="w-full h-2 bg-white/80 dark:bg-slate-900 rounded-full overflow-hidden border border-[#0077b6]/30 dark:border-slate-800/80 shadow-inner">
-            <div
-              className="h-full bg-gradient-to-r from-[#03045e] via-[#0077b6] to-[#00b4d8] dark:from-blue-500 dark:via-cyan-400 dark:to-white transition-all duration-75 ease-out shadow-[0_0_10px_rgba(0,119,182,0.8)]"
-              style={{ width: `${progress}%` }}
-            />
+        ) : (
+          <div className="w-full space-y-2">
+            <div className="flex items-center justify-between w-full text-[10px] font-mono tracking-widest text-[#0077b6] dark:text-slate-400 font-bold">
+              <span>INITIALIZING SECURE PROTOCOLS</span>
+              <span className="text-[#03045e] dark:text-cyan-400 font-black">{progress}%</span>
+            </div>
+            <div className="w-full h-2.5 bg-white dark:bg-slate-900 rounded-full overflow-hidden border-2 border-[#caf0f8] dark:border-slate-800/80 shadow-inner">
+              <div
+                className="h-full bg-gradient-to-r from-[#03045e] via-[#0077b6] to-[#00b4d8] dark:from-blue-500 dark:via-cyan-400 dark:to-white transition-all duration-75 ease-out shadow-[0_0_10px_rgba(0,119,182,0.8)]"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="text-[10px] font-mono text-[#0077b6] dark:text-slate-500 tracking-wider pt-3 flex items-center gap-2 font-bold">
           <span>APEX TREASURY BANK</span>

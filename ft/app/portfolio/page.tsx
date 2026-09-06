@@ -172,7 +172,7 @@ export default function PortfolioPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-[#caf0f8] dark:bg-[#02040a] text-[#03045e] dark:text-white font-sans">
+      <div className="min-h-screen w-full flex items-center justify-center bg-white dark:bg-[#02040a] text-[#03045e] dark:text-white font-sans">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-3 border-[#0077b6]/30 border-t-[#0077b6] rounded-full animate-spin" />
           <p className="text-xs font-mono font-bold text-[#03045e] dark:text-slate-400">Loading Portfolio & Asset Book...</p>
@@ -182,12 +182,12 @@ export default function PortfolioPage() {
   }
 
   return (
-    <div className="flex h-screen bg-[#caf0f8] dark:bg-[#070b14] text-[#03045e] dark:text-slate-100 font-sans overflow-hidden transition-colors">
+    <div className="flex h-screen bg-white dark:bg-[#070b14] text-[#03045e] dark:text-slate-100 font-sans overflow-hidden transition-colors">
       {/* 1. LEFT SIDEBAR */}
       <Sidebar currentTab="portfolio" onSelectTab={handleSelectTab} />
 
       {/* 2. MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-gradient-to-b from-[#caf0f8] via-[#def6fa] to-[#c2eff7] dark:from-[#0a0f1d] dark:via-[#070b14] dark:to-[#04070e] transition-colors">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-white dark:from-[#0a0f1d] dark:via-[#070b14] dark:to-[#04070e] transition-colors">
         {/* TOP HEADER */}
         <Header onTriggerRefresh={handleRefresh} isRefreshing={isRefreshing} />
 
