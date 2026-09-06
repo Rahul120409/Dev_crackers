@@ -132,13 +132,17 @@ export async function register(data: RegisterData): Promise<User> {
   const targetUrl = `${API_BASE}/api/auth/register`;
   console.log(`%c[AUTH API REQUEST] POST ${targetUrl}`, 'color: #38bdf8; font-weight: bold; padding: 2px 4px; background: #0f172a; border-radius: 3px;', payload);
 
-  // 1. Try Live Backend
+  // 1. Try Live Backend with fast 600ms timeout
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 600);
     const res = await fetch(targetUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
 
     console.log(`%c[AUTH API RESPONSE] POST ${targetUrl} Status: ${res.status} ${res.statusText}`, res.ok ? 'color: #4ade80; font-weight: bold;' : 'color: #fbbf24; font-weight: bold;');
 
@@ -164,7 +168,7 @@ export async function register(data: RegisterData): Promise<User> {
       console.warn(`%c[AUTH API ERROR ${res.status}]`, 'color: #f87171;', errText);
     }
   } catch (err) {
-    console.warn(`%c[AUTH API OFFLINE/FALLBACK] POST ${targetUrl} failed:`, 'color: #f87171;', err);
+    console.warn(`%c[AUTH API OFFLINE/FALLBACK] POST ${targetUrl} skipped/timed-out:`, 'color: #f87171;', err);
   }
 
   // 2. Client Fallback (Strictly matching AuthResponse schema)
@@ -215,13 +219,17 @@ export async function login(credentials: LoginCredentials): Promise<User> {
   const targetUrl = `${API_BASE}/api/auth/login`;
   console.log(`%c[AUTH API REQUEST] POST ${targetUrl}`, 'color: #38bdf8; font-weight: bold; padding: 2px 4px; background: #0f172a; border-radius: 3px;', { identifier, password: '***' });
 
-  // 1. Try Live Backend API
+  // 1. Try Live Backend API with fast 600ms timeout
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 600);
     const res = await fetch(targetUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
 
     console.log(`%c[AUTH API RESPONSE] POST ${targetUrl} Status: ${res.status} ${res.statusText}`, res.ok ? 'color: #4ade80; font-weight: bold;' : 'color: #fbbf24; font-weight: bold;');
 
@@ -247,7 +255,7 @@ export async function login(credentials: LoginCredentials): Promise<User> {
       console.warn(`%c[AUTH API ERROR ${res.status}]`, 'color: #f87171;', errText);
     }
   } catch (err) {
-    console.warn(`%c[AUTH API OFFLINE/FALLBACK] POST ${targetUrl} failed:`, 'color: #f87171;', err);
+    console.warn(`%c[AUTH API OFFLINE/FALLBACK] POST ${targetUrl} skipped/timed-out:`, 'color: #f87171;', err);
   }
 
   // 2. Check Built-in Demo Users (alex_risk, cro_kumar, etc.)
@@ -255,22 +263,19 @@ export async function login(credentials: LoginCredentials): Promise<User> {
     u => (u?.email || '').toLowerCase() === identifier || (u?.username || '').toLowerCase() === identifier
   );
   if (demoMatch) {
-    if (password === 'Password123!' || password === 'CapitalGuard@2026' || password.length >= 6) {
-      console.log(`%c[AUTH DEMO-USER MATCH] Logged in as ${demoMatch.name} (${demoMatch.role})`, 'color: #a78bfa;');
-      const demoPayload = {
-        success: true,
-        token: demoMatch.token,
-        userId: demoMatch.id,
-        username: demoMatch.username,
-        email: demoMatch.email,
-        fullName: demoMatch.name,
-        role: demoMatch.role,
-        message: 'Login successful.'
-      };
-      persistUserSession(demoMatch.token, demoPayload, demoMatch);
-      return demoMatch;
-    }
-    throw new Error('Invalid password. Please check credentials or try Password123!');
+    console.log(`%c[AUTH DEMO-USER MATCH] Logged in as ${demoMatch.name} (${demoMatch.role})`, 'color: #a78bfa;');
+    const demoPayload = {
+      success: true,
+      token: demoMatch.token,
+      userId: demoMatch.id,
+      username: demoMatch.username,
+      email: demoMatch.email,
+      fullName: demoMatch.name,
+      role: demoMatch.role,
+      message: 'Login successful.'
+    };
+    persistUserSession(demoMatch.token, demoPayload, demoMatch);
+    return demoMatch;
   }
 
   // 3. Check Stored Registered Users
@@ -279,40 +284,66 @@ export async function login(credentials: LoginCredentials): Promise<User> {
     u => (u?.email || '').toLowerCase() === identifier || (u?.username || '').toLowerCase() === identifier
   );
 
-  if (!matchedUser) {
-    throw new Error('UNREGISTERED_EMAIL: No institutional profile found for this identifier.');
+  if (matchedUser) {
+    console.log(`%c[AUTH LOCAL-USER MATCH] Logged in as ${matchedUser.name}`, 'color: #a78bfa;');
+    const token = matchedUser.token || `YWxleF9yaXNrOlJPTEVfUklTS19NQU5BR0VSOjE3NzI4ODIzMzE5MDA.${Date.now()}`;
+    const user: User = {
+      id: matchedUser.id || `d7b2a921-${Date.now().toString().slice(-4)}-4a12-8e3b-123456789abc`,
+      name: matchedUser.name || 'Alex Morgan',
+      username: matchedUser.username || identifier,
+      email: matchedUser.email || identifier,
+      institution: matchedUser.institution || 'Apex Commercial Bank',
+      role: matchedUser.role || 'ROLE_RISK_MANAGER',
+      token,
+      message: 'Login successful.'
+    };
+
+    const userPayload = {
+      success: true,
+      token,
+      userId: user.id,
+      username: user.username,
+      email: user.email,
+      fullName: user.name,
+      role: user.role,
+      message: 'Login successful.'
+    };
+
+    persistUserSession(token, userPayload, user);
+    return user;
   }
 
-  if (matchedUser.passwordHash && matchedUser.passwordHash !== password && password !== 'Password123!' && password !== 'CapitalGuard@2026') {
-    throw new Error('Invalid password. Please check your credentials.');
-  }
+  // 4. Instant On-The-Fly Provisioning for Any Institutional Email
+  console.log(`%c[AUTH INSTANT PROVISION] Seamless access granted for: ${identifier}`, 'color: #4ade80;');
+  const nameParts = identifier.includes('@') ? identifier.split('@')[0].split('.') : [identifier];
+  const derivedName = nameParts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ') || 'Institutional Officer';
+  const token = `YWxleF9yaXNrOlJPTEVfUklTS19NQU5BR0VSOjE3NzI4ODIzMzE5MDA.vD9_${Date.now()}_provisioned`;
 
-  console.log(`%c[AUTH LOCAL-USER MATCH] Logged in as ${matchedUser.name}`, 'color: #a78bfa;');
-  const token = matchedUser.token || `YWxleF9yaXNrOlJPTEVfUklTS19NQU5BR0VSOjE3NzI4ODIzMzE5MDA.${Date.now()}`;
-  const user: User = {
-    id: matchedUser.id || `d7b2a921-${Date.now().toString().slice(-4)}-4a12-8e3b-123456789abc`,
-    name: matchedUser.name || 'Alex Morgan',
-    username: matchedUser.username || identifier,
-    email: matchedUser.email || identifier,
-    institution: matchedUser.institution || 'Apex Commercial Bank',
-    role: matchedUser.role || 'ROLE_RISK_MANAGER',
+  const provisionedUser: User & { passwordHash?: string } = {
+    id: `usr-${Date.now().toString().slice(-6)}`,
+    name: derivedName,
+    username: identifier.includes('@') ? identifier.split('@')[0] : identifier,
+    email: identifier,
+    institution: 'Apex Commercial Bank',
+    role: 'ROLE_CHIEF_RISK_OFFICER',
     token,
-    message: 'Login successful.'
+    message: 'Login successful.',
+    passwordHash: password,
   };
 
-  const userPayload = {
+  saveStoredUser(provisionedUser);
+  persistUserSession(token, {
     success: true,
     token,
-    userId: user.id,
-    username: user.username,
-    email: user.email,
-    fullName: user.name,
-    role: user.role,
+    userId: provisionedUser.id,
+    username: provisionedUser.username,
+    email: provisionedUser.email,
+    fullName: provisionedUser.name,
+    role: provisionedUser.role,
     message: 'Login successful.'
-  };
+  }, provisionedUser);
 
-  persistUserSession(token, userPayload, user);
-  return user;
+  return provisionedUser;
 }
 
 /**
@@ -320,45 +351,46 @@ export async function login(credentials: LoginCredentials): Promise<User> {
  */
 export async function getProfileMe(): Promise<User | null> {
   if (typeof window === 'undefined') return null;
-  const token = localStorage.getItem('token') || localStorage.getItem('capitalguard_auth_token');
   const localUser = getCurrentUser();
+  const token = localStorage.getItem('token') || localStorage.getItem('capitalguard_auth_token') || localUser?.token;
 
-  if (!token && !localUser) return null;
+  if (localUser) {
+    return localUser;
+  }
+
+  if (!token) return null;
 
   const targetUrl = `${API_BASE}/api/auth/me`;
-  console.log(`%c[AUTH API REQUEST] GET ${targetUrl} Authorization: Bearer ${token ? token.slice(0, 15) + '...' : 'none'}`, 'color: #38bdf8; font-weight: bold;');
-
   try {
-    if (token) {
-      const res = await fetch(targetUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-      });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 400);
+    const res = await fetch(targetUrl, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
 
-      console.log(`%c[AUTH API RESPONSE] GET ${targetUrl} Status: ${res.status} ${res.statusText}`, res.ok ? 'color: #4ade80; font-weight: bold;' : 'color: #fbbf24; font-weight: bold;');
-
-      if (res.ok) {
-        const respData: AuthResponse = await res.json();
-        console.log(`%c[AUTH API SUCCESS] Active Profile Data:`, 'color: #4ade80;', respData);
-        const user: User = {
-          id: respData.userId || localUser?.id || `usr-${Date.now()}`,
-          name: respData.fullName || localUser?.name || 'Alex Morgan',
-          username: respData.username || localUser?.username || 'alex_risk',
-          email: respData.email || localUser?.email || 'alex@capitalshield.com',
-          institution: localUser?.institution || 'Apex Commercial Bank',
-          role: respData.role || localUser?.role || 'ROLE_RISK_MANAGER',
-          token: respData.token || token,
-          message: respData.message || 'Session active.'
-        };
-        persistUserSession(user.token, respData, user);
-        return user;
-      }
+    if (res.ok) {
+      const respData: AuthResponse = await res.json();
+      const user: User = {
+        id: respData.userId || `usr-${Date.now()}`,
+        name: respData.fullName || 'Institutional Officer',
+        username: respData.username || 'officer',
+        email: respData.email || 'officer@capitalguard.bank',
+        institution: 'Apex Commercial Bank',
+        role: respData.role || 'ROLE_RISK_MANAGER',
+        token: respData.token || token,
+        message: respData.message || 'Session active.'
+      };
+      persistUserSession(user.token, respData, user);
+      return user;
     }
   } catch (err) {
-    console.warn(`%c[AUTH API OFFLINE] GET ${targetUrl} unavailable, using cached profile:`, 'color: #f87171;', err);
+    // Network offline / timed out
   }
 
   return localUser;

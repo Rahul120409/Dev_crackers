@@ -98,10 +98,10 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex h-screen bg-[#070b14] text-slate-100 font-sans overflow-hidden">
+    <div className="flex h-screen bg-[#caf0f8] dark:bg-[#070b14] text-[#03045e] dark:text-slate-100 font-sans overflow-hidden transition-colors">
       <Sidebar currentTab={currentTab} onSelectTab={setCurrentTab} />
 
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-gradient-to-b from-[#0a0f1d] via-[#070b14] to-[#04070e]">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#caf0f8] dark:bg-gradient-to-b dark:from-[#0a0f1d] dark:via-[#070b14] dark:to-[#04070e] transition-colors">
         <Header />
 
         {/* Action / Title Bar */}
