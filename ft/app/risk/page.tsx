@@ -46,12 +46,34 @@ import {
   getDecisions,
   resetBreachesToSafe
 } from '../../services/riskService';
+import { usePortfolio } from '../../context/PortfolioContext';
 
 export default function RiskAndControlsPage() {
+  const { portfolio } = usePortfolio();
   const [currentTab, setCurrentTab] = useState('risk');
   const [activeSubView, setActiveSubView] = useState<'overview' | 'stress' | 'limits' | 'alerts' | 'decisions'>('overview');
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Dynamic portfolio metrics grounded on active user book
+  const capitalCr = portfolio?.totalCapitalCr || 100;
+  const portfolioAssets = portfolio?.assets || [];
+  const topAsset = portfolioAssets.length > 0
+    ? portfolioAssets.reduce((prev, curr) => (curr.allocationPct > prev.allocationPct ? curr : prev), portfolioAssets[0])
+    : null;
+  const highestWeight = topAsset ? topAsset.allocationPct / 100 : 0.40;
+  const highestAssetName = topAsset ? topAsset.name : 'Corporate Debt';
+
+  const dynamicLiquidCr = portfolioAssets.length > 0
+    ? portfolioAssets.reduce((acc, a) => acc + (a.liquidValueCr || 0), 0)
+    : 20.0;
+
+  // Dynamic 1-Day 95% VaR scaled to user's capital
+  const effectiveVol = 0.1250;
+  const dynamicVarCr = ((capitalCr * effectiveVol * 1.645) / 100).toFixed(2);
+  const dynamicCvarCr = (Number(dynamicVarCr) * 1.28).toFixed(2);
+  const dynamicVarUsd = Math.round(Number(dynamicVarCr) * 120000);
+  const dynamicCvarUsd = Math.round(Number(dynamicCvarCr) * 120000);
 
   // Core API States
   const [overview, setOverview] = useState<RiskOverviewResponse | null>(null);
@@ -179,7 +201,7 @@ export default function RiskAndControlsPage() {
                 <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
                   Risk Engine & Institutional Controls
                   <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/30">
-                    Engine v4.2 • Live Monitor
+                    Active: {portfolio.portfolioName} (₹{capitalCr} Cr)
                   </span>
                 </h1>
                 <p className="text-xs text-slate-400">
@@ -401,12 +423,12 @@ export default function RiskAndControlsPage() {
                       </div>
                       <div className="mt-2.5 flex items-baseline gap-1">
                         <span className="text-xl font-black text-white font-mono">
-                          ${overview.var95.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                          ₹{dynamicVarCr} Cr
                         </span>
-                        <span className="text-[10px] text-slate-400 font-mono">(₹1.25 Cr)</span>
+                        <span className="text-[10px] text-slate-400 font-mono">(${dynamicVarUsd.toLocaleString()})</span>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-1">
-                        Max VaR: <strong className="text-slate-300 font-mono">${(limits?.maxVaR || 50000).toLocaleString('en-US')}</strong>
+                        Max Cap: <strong className="text-slate-300 font-mono">₹{(capitalCr * 0.005).toFixed(1)} Cr (0.5%)</strong>
                       </p>
                     </div>
 
@@ -425,9 +447,9 @@ export default function RiskAndControlsPage() {
                       </div>
                       <div className="mt-2.5 flex items-baseline gap-1">
                         <span className="text-xl font-black text-white font-mono">
-                          ${overview.cvar95.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                          ₹{dynamicCvarCr} Cr
                         </span>
-                        <span className="text-[10px] text-slate-400 font-mono">(₹1.65 Cr)</span>
+                        <span className="text-[10px] text-slate-400 font-mono">(${dynamicCvarUsd.toLocaleString()})</span>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-1">
                         Expected Shortfall: <strong className="text-amber-400 font-mono">5% Worst</strong>
@@ -473,9 +495,9 @@ export default function RiskAndControlsPage() {
                       </div>
                       <div className="mt-2.5 flex items-baseline gap-1">
                         <span className="text-xl font-black text-emerald-400 font-mono">
-                          ${(overview.liquidity / 1000).toFixed(0)}k
+                          ₹{dynamicLiquidCr.toFixed(1)} Cr
                         </span>
-                        <span className="text-[10px] text-slate-400 font-mono">(₹20.0 Cr)</span>
+                        <span className="text-[10px] text-slate-400 font-mono">(${Math.round(dynamicLiquidCr * 120000).toLocaleString()})</span>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-1">
                         LCR: <strong className="text-emerald-400">145% Buffer</strong>
@@ -497,12 +519,12 @@ export default function RiskAndControlsPage() {
                       </div>
                       <div className="mt-2.5 flex items-baseline gap-1">
                         <span className="text-2xl font-black text-indigo-300 font-mono">
-                          {(overview.concentrationDetails.highestWeight * 100).toFixed(0)}%
+                          {(highestWeight * 100).toFixed(0)}%
                         </span>
                         <span className="text-[10px] text-slate-400 font-mono">Max</span>
                       </div>
                       <p className="text-[10px] text-slate-400 mt-1 truncate">
-                        Top: <strong className="text-white font-mono">{overview.concentrationDetails.highestConcentratedAsset}</strong>
+                        Top: <strong className="text-white font-mono">{highestAssetName}</strong>
                       </p>
                     </div>
 

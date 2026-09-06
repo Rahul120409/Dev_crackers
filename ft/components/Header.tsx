@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { usePortfolio } from '../context/PortfolioContext';
 import {
   Bell,
   Search,
@@ -25,9 +26,16 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onTriggerRefresh, isRefreshing = false }) => {
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
+  const { portfolio, availablePortfolios, switchPortfolioByName } = usePortfolio();
   const [currentTime, setCurrentTime] = useState<string>('');
-  const [selectedPortfolio, setSelectedPortfolio] = useState('Institutional Treasury Core Book (₹100 Cr)');
+  const [selectedPortfolio, setSelectedPortfolio] = useState(portfolio?.portfolioName || 'Institutional Capital Alpha Book');
   const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+    if (portfolio?.portfolioName) {
+      setSelectedPortfolio(portfolio.portfolioName);
+    }
+  }, [portfolio?.portfolioName]);
 
   const displayName = user?.name || user?.username || 'Alex Morgan';
   const displayRole = user?.role
@@ -93,12 +101,22 @@ export const Header: React.FC<HeaderProps> = ({ onTriggerRefresh, isRefreshing =
             <Layers className="w-3.5 h-3.5 text-[#0077b6] dark:text-cyan-400" />
             <select
               value={selectedPortfolio}
-              onChange={(e) => setSelectedPortfolio(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSelectedPortfolio(val);
+                switchPortfolioByName(val);
+              }}
               className="bg-transparent border-none outline-none cursor-pointer pr-4 font-bold text-[#03045e] dark:text-slate-200"
             >
-              <option value="Institutional Treasury Core Book (₹100 Cr)" className="bg-white dark:bg-slate-900 text-[#03045e] dark:text-slate-100">Institutional Treasury Core Book (₹100 Cr)</option>
-              <option value="Global Liquidity & Sovereign Reserve (₹45 Cr)" className="bg-white dark:bg-slate-900 text-[#03045e] dark:text-slate-100">Global Liquidity & Sovereign Reserve (₹45 Cr)</option>
-              <option value="Commercial Credit Portfolio Beta (₹150 Cr)" className="bg-white dark:bg-slate-900 text-[#03045e] dark:text-slate-100">Commercial Credit Portfolio Beta (₹150 Cr)</option>
+              {availablePortfolios.map((p) => (
+                <option
+                  key={p.portfolioName}
+                  value={p.portfolioName}
+                  className="bg-white dark:bg-slate-900 text-[#03045e] dark:text-slate-100"
+                >
+                  {p.portfolioName} (₹{p.totalCapitalCr.toLocaleString()} Cr)
+                </option>
+              ))}
             </select>
           </div>
         </div>

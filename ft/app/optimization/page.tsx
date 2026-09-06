@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Sidebar } from '../../components/Sidebar';
 import { Header } from '../../components/Header';
 import { useAuth } from '../../context/AuthContext';
+import { usePortfolio } from '../../context/PortfolioContext';
 import {
   Sparkles,
   TrendingUp,
@@ -162,6 +163,9 @@ const STRATEGIES: StrategyOption[] = [
 export default function OptimizationPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
+  const { portfolio } = usePortfolio();
+  const capitalCr = portfolio?.totalCapitalCr || 100;
+  const portfolioName = portfolio?.portfolioName || 'Institutional Capital Alpha Book';
 
   const [currentTab, setCurrentTab] = useState('optimization');
   const [selectedStrategyId, setSelectedStrategyId] = useState('balanced');
@@ -171,6 +175,79 @@ export default function OptimizationPage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const activeStrategy = STRATEGIES.find((s: StrategyOption) => s.id === selectedStrategyId) || STRATEGIES[0];
+
+  const allocationItems: AssetAllocationComparison[] = [
+    {
+      id: 'equity',
+      name: 'Listed Equity & ETFs',
+      category: 'High-Beta Growth',
+      color: '#F59E0B',
+      currentPct: 30,
+      currentValueCr: Number((capitalCr * 0.30).toFixed(1)),
+      recommendedPct: 22,
+      recommendedValueCr: Number((capitalCr * 0.22).toFixed(1)),
+      deltaPct: -8,
+      deltaValueCr: Number((capitalCr * 0.08).toFixed(1)),
+      action: 'REDUCE',
+      actionLabel: `Trim -8% (Sell ₹${(capitalCr * 0.08).toFixed(1)} Cr)`,
+    },
+    {
+      id: 'gov_bonds',
+      name: 'Government Sovereign Bonds',
+      category: 'Sovereign 10Y Benchmark',
+      color: '#3B82F6',
+      currentPct: 30,
+      currentValueCr: Number((capitalCr * 0.30).toFixed(1)),
+      recommendedPct: 35,
+      recommendedValueCr: Number((capitalCr * 0.35).toFixed(1)),
+      deltaPct: 5,
+      deltaValueCr: Number((capitalCr * 0.05).toFixed(1)),
+      action: 'INCREASE',
+      actionLabel: `Expand +5% (Buy ₹${(capitalCr * 0.05).toFixed(1)} Cr)`,
+    },
+    {
+      id: 'corp_bonds',
+      name: 'Corporate AAA Debt',
+      category: 'Investment Grade Debt',
+      color: '#0D9488',
+      currentPct: 20,
+      currentValueCr: Number((capitalCr * 0.20).toFixed(1)),
+      recommendedPct: 20,
+      recommendedValueCr: Number((capitalCr * 0.20).toFixed(1)),
+      deltaPct: 0,
+      deltaValueCr: 0.0,
+      action: 'HOLD',
+      actionLabel: `Hold 20% (₹${(capitalCr * 0.20).toFixed(1)} Cr)`,
+    },
+    {
+      id: 'gold',
+      name: 'Gold & Strategic Reserves',
+      category: 'Inflation / Hedge Asset',
+      color: '#EAB308',
+      currentPct: 10,
+      currentValueCr: Number((capitalCr * 0.10).toFixed(1)),
+      recommendedPct: 10,
+      recommendedValueCr: Number((capitalCr * 0.10).toFixed(1)),
+      deltaPct: 0,
+      deltaValueCr: 0.0,
+      action: 'HOLD',
+      actionLabel: `Hold 10% (₹${(capitalCr * 0.10).toFixed(1)} Cr)`,
+    },
+    {
+      id: 'cash',
+      name: 'Cash & Overnight Repo',
+      category: 'Tier-1 Immediate Liquidity',
+      color: '#10B981',
+      currentPct: 10,
+      currentValueCr: Number((capitalCr * 0.10).toFixed(1)),
+      recommendedPct: 13,
+      recommendedValueCr: Number((capitalCr * 0.13).toFixed(1)),
+      deltaPct: 3,
+      deltaValueCr: Number((capitalCr * 0.03).toFixed(1)),
+      action: 'INCREASE',
+      actionLabel: `Expand +3% (Deposit ₹${(capitalCr * 0.03).toFixed(1)} Cr)`,
+    },
+  ];
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -220,6 +297,9 @@ export default function OptimizationPage() {
               <div>
                 <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
                   Portfolio & Capital Optimization Engine
+                  <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/30">
+                    Active: {portfolioName} (₹{capitalCr.toLocaleString()} Cr)
+                  </span>
                   <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                     FRONTIER ACTIVE
                   </span>
@@ -233,7 +313,7 @@ export default function OptimizationPage() {
 
           <div className="flex items-center gap-3">
             <span className="text-xs font-mono text-slate-400 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800">
-              Total Capital: <strong className="text-white">₹100.0 Cr</strong>
+              Total Capital: <strong className="text-white">₹{capitalCr.toLocaleString()} Cr</strong>
             </span>
             {isExecuted && (
               <button
@@ -312,13 +392,13 @@ export default function OptimizationPage() {
                 <span className="text-xs font-mono font-bold uppercase text-slate-400">VaR (95% 1-Day)</span>
                 <Activity className="w-4 h-4 text-cyan-400" />
               </div>
-              <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-lg font-bold font-mono text-slate-500 line-through">₹2.10 Cr</span>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
-                <span className="text-xl font-black font-mono text-cyan-300">
-                  ₹1.45 Cr
+              <div className="mt-3 flex items-baseline gap-2 whitespace-nowrap overflow-x-auto">
+                <span className="text-base sm:text-lg font-bold font-mono text-slate-500 line-through">₹{(capitalCr * 0.021).toFixed(2)} Cr</span>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span className="text-lg sm:text-xl font-black font-mono text-cyan-300">
+                  ₹{(capitalCr * 0.0145).toFixed(2)} Cr
                 </span>
-                <span className="text-[10px] text-cyan-300 font-mono font-bold bg-cyan-500/20 px-1.5 py-0.5 rounded border border-cyan-500/30">-31%</span>
+                <span className="text-[10px] text-cyan-300 font-mono font-bold bg-cyan-500/20 px-1.5 py-0.5 rounded border border-cyan-500/30 shrink-0">-31%</span>
               </div>
               <p className="text-[11px] text-slate-400 mt-2">
                 Tail risk and expected shortfall significantly mitigated.
@@ -331,16 +411,16 @@ export default function OptimizationPage() {
                 <span className="text-xs font-mono font-bold uppercase text-slate-400">Liquidity Buffer</span>
                 <Droplets className="w-4 h-4 text-teal-400" />
               </div>
-              <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-lg font-bold font-mono text-slate-500 line-through">₹10.0 Cr</span>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
-                <span className="text-xl font-black font-mono text-teal-300">
-                  ₹13.0 Cr
+              <div className="mt-3 flex items-baseline gap-2 whitespace-nowrap overflow-x-auto">
+                <span className="text-base sm:text-lg font-bold font-mono text-slate-500 line-through">₹{(capitalCr * 0.10).toFixed(1)} Cr</span>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <span className="text-lg sm:text-xl font-black font-mono text-teal-300">
+                  ₹{(capitalCr * 0.13).toFixed(1)} Cr
                 </span>
-                <span className="text-[10px] text-teal-300 font-mono font-bold bg-teal-500/20 px-1.5 py-0.5 rounded border border-teal-500/30">+₹3.0 Cr</span>
+                <span className="text-[10px] text-teal-300 font-mono font-bold bg-teal-500/20 px-1.5 py-0.5 rounded border border-teal-500/30 shrink-0">+₹{(capitalCr * 0.03).toFixed(1)} Cr</span>
               </div>
               <p className="text-[11px] text-slate-400 mt-2">
-                Exceeds statutory LCR requirement of ₹10.0 Cr.
+                Exceeds statutory LCR requirement of ₹{(capitalCr * 0.10).toFixed(1)} Cr.
               </p>
             </div>
           </div>
@@ -383,7 +463,7 @@ export default function OptimizationPage() {
                 </thead>
 
                 <tbody className="divide-y divide-slate-800/80 font-sans">
-                  {ALLOCATION_ITEMS.map((item) => (
+                  {allocationItems.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-800/40 transition-colors">
                       {/* Asset Name */}
                       <td className="py-3.5 px-5">
@@ -408,7 +488,7 @@ export default function OptimizationPage() {
 
                       {/* Current Value ₹ Cr */}
                       <td className="py-3.5 px-4 text-right font-mono font-bold text-slate-200 bg-slate-900/40">
-                        ₹{item.currentValueCr.toFixed(1)} Cr
+                        ₹{item.currentValueCr.toLocaleString()} Cr
                       </td>
 
                       {/* Recommended Allocation % */}
@@ -418,7 +498,7 @@ export default function OptimizationPage() {
 
                       {/* Recommended Value ₹ Cr */}
                       <td className="py-3.5 px-4 text-right font-mono font-black text-white bg-indigo-950/30">
-                        ₹{item.recommendedValueCr.toFixed(1)} Cr
+                        ₹{item.recommendedValueCr.toLocaleString()} Cr
                       </td>
 
                       {/* Delta Action % */}
@@ -432,7 +512,7 @@ export default function OptimizationPage() {
                               : 'bg-slate-800 text-slate-400 border-slate-700'
                           }`}
                         >
-                          {item.deltaPct > 0 ? `+${item.deltaPct}% (+₹${item.deltaValueCr} Cr)` : item.deltaPct < 0 ? `${item.deltaPct}% (${item.deltaValueCr} Cr)` : '0% (Hold)'}
+                          {item.deltaPct > 0 ? `+${item.deltaPct}% (+₹${item.deltaValueCr} Cr)` : item.deltaPct < 0 ? `${item.deltaPct}% (-₹${item.deltaValueCr} Cr)` : '0% (Hold)'}
                         </span>
                       </td>
 
@@ -466,14 +546,14 @@ export default function OptimizationPage() {
                     <td className="py-3.5 px-4 text-right text-slate-300 bg-slate-900/40">
                       100.0%
                     </td>
-                    <td className="py-3.5 px-4 text-right text-slate-200 bg-slate-900/40">
-                      ₹100.0 Cr
+                    <td className="py-3.5 px-4 text-right text-slate-200 bg-slate-900/40 font-mono font-bold">
+                      ₹{capitalCr.toLocaleString()} Cr
                     </td>
                     <td className="py-3.5 px-4 text-right text-cyan-300 bg-indigo-950/30">
                       100.0%
                     </td>
-                    <td className="py-3.5 px-4 text-right text-white bg-indigo-950/30">
-                      ₹100.0 Cr
+                    <td className="py-3.5 px-4 text-right text-white bg-indigo-950/30 font-mono font-bold">
+                      ₹{capitalCr.toLocaleString()} Cr
                     </td>
                     <td className="py-3.5 px-4 text-center text-emerald-400">
                       Net Zero Delta (₹0)
@@ -499,11 +579,11 @@ export default function OptimizationPage() {
                   <Layers className="w-4 h-4 text-indigo-400" />
                   Asset Shift Visualizer (Current vs Recommended)
                 </h3>
-                <span className="text-[11px] font-mono text-slate-400">Total: ₹100.0 Cr</span>
+                <span className="text-[11px] font-mono text-slate-400">Total: ₹{capitalCr.toLocaleString()} Cr</span>
               </div>
 
               <div className="space-y-3">
-                {ALLOCATION_ITEMS.map((item) => (
+                {allocationItems.map((item) => (
                   <div key={item.id} className="p-3.5 rounded-xl bg-slate-800/40 border border-slate-700/60 space-y-2">
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
@@ -568,7 +648,7 @@ export default function OptimizationPage() {
                       </span>
                       {executionStep >= 1 ? <Check className="w-4 h-4 text-emerald-400" /> : <span className="text-[10px] text-slate-500">PENDING</span>}
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1 pl-7">Liquidate -₹8.0 Cr Equity ➔ Credit into Central Clearing Book.</p>
+                    <p className="text-[11px] text-slate-400 mt-1 pl-7">Liquidate -₹{(capitalCr * 0.08).toFixed(1)} Cr Equity ➔ Credit into Central Clearing Book.</p>
                   </div>
 
                   {/* Leg 2 */}
@@ -582,7 +662,7 @@ export default function OptimizationPage() {
                       </span>
                       {executionStep >= 2 ? <Check className="w-4 h-4 text-emerald-400" /> : <span className="text-[10px] text-slate-500">PENDING</span>}
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1 pl-7">Acquire +₹5.0 Cr Sovereign 10-Year AAA Benchmark Bonds.</p>
+                    <p className="text-[11px] text-slate-400 mt-1 pl-7">Acquire +₹{(capitalCr * 0.05).toFixed(1)} Cr Sovereign 10-Year AAA Benchmark Bonds.</p>
                   </div>
 
                   {/* Leg 3 */}
@@ -596,7 +676,7 @@ export default function OptimizationPage() {
                       </span>
                       {executionStep >= 3 ? <Check className="w-4 h-4 text-emerald-400" /> : <span className="text-[10px] text-slate-500">PENDING</span>}
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-1 pl-7">Deposit +₹3.0 Cr into Central Bank Liquid Overnight Facility.</p>
+                    <p className="text-[11px] text-slate-400 mt-1 pl-7">Deposit +₹{(capitalCr * 0.03).toFixed(1)} Cr into Central Bank Liquid Overnight Facility.</p>
                   </div>
                 </div>
 

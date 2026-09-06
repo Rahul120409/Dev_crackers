@@ -21,6 +21,8 @@ export const metadata: Metadata = {
   description: "Asset & Capital Management, Portfolio Optimization, Risk Controls, and Liquidity Management for Financial Institutions",
 };
 
+import { FloatingAiCopilot } from "../components/FloatingAiCopilot";
+
 export default function RootLayout({
   children,
 }: {
@@ -31,11 +33,14 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col transition-colors duration-200">
+      <body className="min-h-full flex flex-col transition-colors duration-200 relative">
         <ThemeProvider>
           <AuthProvider>
             <PortfolioProvider>
-              <SidebarProvider>{children}</SidebarProvider>
+              <SidebarProvider>
+                {children}
+                <FloatingAiCopilot />
+              </SidebarProvider>
             </PortfolioProvider>
           </AuthProvider>
         </ThemeProvider>

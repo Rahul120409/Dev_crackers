@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/ai")
+@CrossOrigin(origins = "*")
 public class AiController {
 
     private final FinanceAiService financeAiService;
@@ -26,8 +27,10 @@ public class AiController {
      */
     @PostMapping("/ask")
     public AiAnalysisResponse askFinancialAi(@RequestBody AiPromptRequest request) {
-        String question = request != null ? request.getQuestion() : "Explain current portfolio risk profile";
-        return financeAiService.answerQuery(question);
+        String question = request != null && request.getQuestion() != null ? request.getQuestion() : "Explain current portfolio risk profile";
+        java.math.BigDecimal capital = request != null ? request.getTotalCapital() : null;
+        String pName = request != null ? request.getPortfolioName() : null;
+        return financeAiService.answerQuery(question, capital, pName);
     }
 
     /**

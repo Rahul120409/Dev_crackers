@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Sidebar } from '../../components/Sidebar';
 import { Header } from '../../components/Header';
 import { useAuth } from '../../context/AuthContext';
+import { usePortfolio } from '../../context/PortfolioContext';
 import {
   Building2,
   ShieldAlert,
@@ -86,14 +87,37 @@ export default function DashboardPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
+  const { portfolio } = usePortfolio();
+  const capitalCr = portfolio?.totalCapitalCr || 100;
+  const portfolioName = portfolio?.portfolioName || 'Institutional Capital Alpha Book';
+
+  // Dynamic asset allocations from active portfolio
+  const dynamicAllocations = portfolio?.assets && portfolio.assets.length > 0
+    ? portfolio.assets.map((a, idx) => ({
+        name: a.name,
+        category: a.category || a.name,
+        percentage: a.allocationPct,
+        amount: Number(((a.allocationPct * capitalCr) / 100).toFixed(1)),
+        riskWeight: a.allocationPct > 35 ? 'High Concentration' : 'Standard RWA',
+        color: ['#0077b6', '#0096c7', '#00b4d8', '#48cae4', '#90e0ef', '#f59e0b', '#10b981'][idx % 7]
+      }))
+    : mockAllocations;
+
+  const topAsset = portfolio?.assets && portfolio.assets.length > 0
+    ? portfolio.assets.reduce((prev, curr) => (curr.allocationPct > prev.allocationPct ? curr : prev), portfolio.assets[0])
+    : null;
+  const topAssetName = topAsset ? topAsset.name : 'US10Y';
+  const topAssetPct = topAsset ? topAsset.allocationPct : 40.0;
+  const dynamicHhi = (dynamicAllocations.reduce((sum, a) => sum + Math.pow(a.percentage / 100, 2), 0)).toFixed(4);
+
   // Metrics derived from Risk Engine & Portfolio
-  const totalCapital = '₹100.0 Cr';
-  const totalCapitalUSD = '$1,000,000.00';
-  const riskScore = riskOverview?.riskScore ?? 38;
+  const totalCapital = `₹${capitalCr.toLocaleString()} Cr`;
+  const totalCapitalUSD = `≈ $${(capitalCr * 1200000).toLocaleString('en-US')}`;
+  const riskScore = riskOverview?.riskScore ?? 33;
   const riskLevel = riskOverview?.riskLevel ?? 'MODERATE';
-  const liquidityAmount = riskOverview?.liquidity 
-    ? `$${riskOverview.liquidity.toLocaleString('en-US', { minimumFractionDigits: 2 })}` 
-    : '₹20.0 Cr';
+  const dynamicVarCr = ((capitalCr * 0.125 * 1.645) / 100).toFixed(2);
+  const liquidityCr = (capitalCr * 0.68).toFixed(1);
+  const liquidityAmount = `₹${liquidityCr} Cr`;
 
   const isCriticalRisk = riskLevel === 'CRITICAL' || riskScore > 70;
 
@@ -183,9 +207,9 @@ export default function DashboardPage() {
                   <Building2 className="w-4 h-4" />
                 </div>
               </div>
-              <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-black font-mono text-[#03045e] dark:text-white">{totalCapital}</span>
-                <span className="text-xs text-slate-500 dark:text-slate-400 font-mono font-semibold">({totalCapitalUSD})</span>
+              <div className="mt-3 flex items-baseline gap-2 flex-wrap">
+                <span className="text-2xl sm:text-3xl font-black font-mono text-[#03045e] dark:text-white whitespace-nowrap">{totalCapital}</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-mono font-semibold whitespace-nowrap">({totalCapitalUSD})</span>
               </div>
               <div className="mt-2 flex items-center justify-between text-[11px] font-mono">
                 <span className="text-emerald-700 dark:text-emerald-400 font-bold">+3.2% vs last month</span>
@@ -246,7 +270,7 @@ export default function DashboardPage() {
                 </span>
               </div>
               <div className="mt-2 flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400 font-mono">
-                <span>VaR 95%: <strong className="text-[#03045e] dark:text-slate-200 font-bold">$12.9k</strong></span>
+                <span>VaR 95%: <strong className="text-[#03045e] dark:text-slate-200 font-bold">₹{dynamicVarCr} Cr</strong></span>
                 <span>Vol: <strong className="text-[#03045e] dark:text-slate-200 font-bold">12.5%</strong></span>
               </div>
             </div>
@@ -260,12 +284,12 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-2xl sm:text-3xl font-black font-mono text-[#0077b6] dark:text-cyan-300">
+                <span className="text-2xl sm:text-3xl font-black font-mono text-[#0077b6] dark:text-cyan-300 whitespace-nowrap">
                   {liquidityAmount}
                 </span>
               </div>
               <div className="mt-2 flex items-center justify-between text-[11px] font-mono">
-                <span className="text-emerald-700 dark:text-emerald-400 font-bold">160% LCR Buffer</span>
+                <span className="text-emerald-700 dark:text-emerald-400 font-bold">145% LCR Buffer</span>
                 <span className="text-slate-500 font-medium">Basel III Compliant</span>
               </div>
             </div>
@@ -283,7 +307,7 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-2">
                   <PieChart className="w-4 h-4 text-[#0077b6] dark:text-indigo-400" />
                   <h2 className="text-sm font-black text-[#03045e] dark:text-white uppercase tracking-wider">
-                    Asset Allocation Chart (₹100 Cr Book)
+                    Asset Allocation Chart (₹{capitalCr.toLocaleString()} Cr Book)
                   </h2>
                 </div>
                 <button
@@ -298,7 +322,7 @@ export default function DashboardPage() {
               {/* Allocation Distribution Bar */}
               <div className="space-y-3.5 mb-6">
                 <div className="h-4 w-full bg-slate-100 dark:bg-slate-950 rounded-xl overflow-hidden flex p-0.5 border border-slate-200 dark:border-slate-800">
-                  {allocations.map((a, idx) => (
+                  {dynamicAllocations.map((a, idx) => (
                     <div
                       key={a.name}
                       onMouseEnter={() => setActiveAssetIndex(idx)}
@@ -308,14 +332,14 @@ export default function DashboardPage() {
                         width: `${a.percentage}%`,
                         backgroundColor: a.color
                       }}
-                      title={`${a.name}: ${a.percentage}% (₹${a.amount} Cr)`}
+                      title={`${a.name}: ${a.percentage}% (₹${((a.percentage * capitalCr) / 100).toFixed(1)} Cr)`}
                     />
                   ))}
                 </div>
 
                 {/* Legend Items */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                  {allocations.map((a, idx) => (
+                  {dynamicAllocations.map((a, idx) => (
                     <div
                       key={a.name}
                       className={`p-3 rounded-xl border transition-all ${
@@ -332,7 +356,7 @@ export default function DashboardPage() {
                         {a.percentage}%
                       </div>
                       <span className="text-[10px] text-slate-600 dark:text-slate-400 font-mono font-medium block">
-                        ₹{a.amount.toFixed(1)} Cr • {a.riskWeight}
+                        ₹{((a.percentage * capitalCr) / 100).toFixed(1)} Cr • {a.riskWeight}
                       </span>
                     </div>
                   ))}
@@ -340,8 +364,8 @@ export default function DashboardPage() {
               </div>
 
               <div className="p-3.5 rounded-xl bg-[#caf0f8]/30 dark:bg-slate-950/60 border border-[#0077b6]/20 dark:border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-700 dark:text-slate-400 font-medium">
-                <span>Concentration Index: <strong className="text-[#03045e] dark:text-slate-200 font-bold">HHI 0.2850</strong></span>
-                <span>Top Asset: <strong className="text-[#0077b6] dark:text-indigo-400 font-bold">US10Y (40.0%)</strong></span>
+                <span>Concentration Index: <strong className="text-[#03045e] dark:text-slate-200 font-bold">HHI {dynamicHhi}</strong></span>
+                <span>Top Asset: <strong className="text-[#0077b6] dark:text-indigo-400 font-bold">{topAssetName} ({topAssetPct}%)</strong></span>
                 <span className="text-emerald-700 dark:text-emerald-400 font-bold">● Statutory Limits OK</span>
               </div>
             </div>
@@ -362,7 +386,7 @@ export default function DashboardPage() {
                 </div>
 
                 <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed mb-4 font-medium">
-                  Autonomous rebalancing model detects surplus cash drag. Reallocate ₹5.0 Cr from high-beta credit into sovereign G-Sec and overnight repo facility.
+                  Autonomous rebalancing model detects surplus cash drag. Reallocate ₹{(capitalCr * 0.05).toFixed(1)} Cr from high-beta credit into sovereign G-Sec and overnight repo facility.
                 </p>
 
                 <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-[#caf0f8]/30 dark:bg-slate-950/70 border border-[#0077b6]/20 dark:border-slate-800 text-center font-mono mb-4">
@@ -372,7 +396,7 @@ export default function DashboardPage() {
                   </div>
                   <div>
                     <span className="text-[9px] text-slate-500 dark:text-slate-400 block font-bold">Surplus HQLA</span>
-                    <span className="text-xs font-black text-[#0077b6] dark:text-cyan-300">+₹4.0 Cr</span>
+                    <span className="text-xs font-black text-[#0077b6] dark:text-cyan-300">+₹{(capitalCr * 0.04).toFixed(1)} Cr</span>
                   </div>
                   <div>
                     <span className="text-[9px] text-slate-500 dark:text-slate-400 block font-bold">Sharpe Delta</span>

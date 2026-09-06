@@ -11,4 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AiPromptRequest {
     private String question; // User query to the Financial AI
+    private java.math.BigDecimal totalCapital; // Active user capital in Cr or $
+    private String portfolioName; // Active portfolio name
 }

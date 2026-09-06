@@ -25,7 +25,6 @@ public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
     private final AssetRepository assetRepository;
-
     private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     public PortfolioService() {
@@ -41,24 +40,54 @@ public class PortfolioService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Transactional
-    public PortfolioResponseDto getDefaultPortfolio() {
-        BigDecimal totalCapital = BigDecimal.valueOf(100_000_000); // Rs. 100 Cr default baseline
-
+    @jakarta.annotation.PostConstruct
+    public void ensureTablesExist() {
         if (jdbcTemplate != null) {
             try {
+                jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS portfolios (" +
+                        "id UUID PRIMARY KEY, " +
+                        "name VARCHAR(255) NOT NULL, " +
+                        "total_capital NUMERIC(38, 2) NOT NULL, " +
+                        "created_at TIMESTAMP, " +
+                        "updated_at TIMESTAMP)");
+
+                jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS assets (" +
+                        "id UUID PRIMARY KEY, " +
+                        "name VARCHAR(255) NOT NULL UNIQUE, " +
+                        "asset_type VARCHAR(255) NOT NULL, " +
+                        "asset_class VARCHAR(255), " +
+                        "expected_return DOUBLE PRECISION, " +
+                        "volatility DOUBLE PRECISION, " +
+                        "liquidity_score DOUBLE PRECISION, " +
+                        "risk_level VARCHAR(255), " +
+                        "current_value NUMERIC(38, 2), " +
+                        "current_weight DOUBLE PRECISION, " +
+                        "target_weight DOUBLE PRECISION, " +
+                        "risk_weight DOUBLE PRECISION, " +
+                        "symbol VARCHAR(255), " +
+                        "price DOUBLE PRECISION, " +
+                        "weight DOUBLE PRECISION, " +
+                        "created_at TIMESTAMP, " +
+                        "updated_at TIMESTAMP)");
+
                 jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS allocations (" +
                         "id UUID PRIMARY KEY, " +
-                        "portfolio_id UUID, " +
-                        "asset_id UUID, " +
-                        "amount NUMERIC(19, 2), " +
+                        "portfolio_id UUID NOT NULL REFERENCES portfolios(id) ON DELETE CASCADE, " +
+                        "asset_id UUID NOT NULL REFERENCES assets(id) ON DELETE CASCADE, " +
+                        "amount NUMERIC(38, 2), " +
                         "percentage DOUBLE PRECISION, " +
                         "created_at TIMESTAMP, " +
-                        "updated_at TIMESTAMP" +
-                        ")");
-            } catch (Exception ignored) {
+                        "updated_at TIMESTAMP)");
+
+                System.out.println(">>> CapitalGuard PostgreSQL schema initialized successfully: portfolios, assets, and allocations tables verified.");
+            } catch (Exception e) {
+                System.err.println(">>> PostgreSQL schema auto-init warning: " + e.getMessage());
             }
         }
+    }
+
+    public PortfolioResponseDto getDefaultPortfolio() {
+        BigDecimal totalCapital = BigDecimal.valueOf(100_000_000); // Rs. 100 Cr default baseline
 
         // If repository is injected and database is available, persist & sync with PostgreSQL
         if (portfolioRepository != null && assetRepository != null) {
@@ -147,7 +176,6 @@ public class PortfolioService {
         );
     }
 
-    @Transactional
     public PortfolioResponseDto saveCustomPortfolio(PortfolioResponseDto request) {
         BigDecimal totalCap = request.getTotalCapital() != null ? request.getTotalCapital() : BigDecimal.valueOf(100_000_000);
         String pName = request.getName() != null ? request.getName() : "Custom User Portfolio";
@@ -195,7 +223,8 @@ public class PortfolioService {
                         .assets(request.getAssets())
                         .build();
             } catch (Exception e) {
-                // Fallback returns DTO directly
+                System.err.println("Portfolio save error: " + e.getMessage());
+                e.printStackTrace();
             }
         }
 
