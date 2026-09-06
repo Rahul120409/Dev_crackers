@@ -1,6 +1,5 @@
 package com.CapitalGuard.finance.service;
 
-import com.CapitalGuard.finance.entity.Portfolio;
 import com.CapitalGuard.finance.model.BreachReport;
 import com.CapitalGuard.finance.model.ControlAction;
 import com.CapitalGuard.finance.model.RiskLimit;

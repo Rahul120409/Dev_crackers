@@ -20,7 +20,6 @@ public class ScenarioController {
     private final StressTestService stressTestService;
     private final DecisionLogService decisionLogService;
 
-    @Autowired
     public ScenarioController(StressTestService stressTestService, DecisionLogService decisionLogService) {
         this.stressTestService = stressTestService;
         this.decisionLogService = decisionLogService;

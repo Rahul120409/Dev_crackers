@@ -8,8 +8,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class DatabaseInitializer implements CommandLineRunner {
 
-    @Autowired(required = false)
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
+    public DatabaseInitializer(@Autowired(required = false) JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public void run(String... args) {
@@ -22,3 +25,4 @@ public class DatabaseInitializer implements CommandLineRunner {
         }
     }
 }
+

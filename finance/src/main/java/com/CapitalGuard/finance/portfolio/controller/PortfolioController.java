@@ -16,7 +16,6 @@ public class PortfolioController {
 
     private final PortfolioService portfolioService;
 
-    @Autowired
     public PortfolioController(PortfolioService portfolioService) {
         this.portfolioService = portfolioService;
     }

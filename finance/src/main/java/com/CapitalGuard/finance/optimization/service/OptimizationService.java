@@ -31,26 +31,23 @@ public class OptimizationService {
     private final RebalancingCostModel costModel;
     private final OptimizationLogRepository logRepository;
 
-    @Autowired(required = false)
-    public OptimizationService(
-            OptimizationEngine optimizationEngine,
-            RebalanceCalculator rebalanceCalculator,
-            RebalancingCostModel costModel,
-            OptimizationLogRepository logRepository) {
-        this.optimizationEngine = optimizationEngine;
-        this.rebalanceCalculator = rebalanceCalculator;
-        this.costModel = costModel;
-        this.logRepository = logRepository;
-    }
-
     public OptimizationService(
             OptimizationEngine optimizationEngine,
             RebalanceCalculator rebalanceCalculator,
             RebalancingCostModel costModel) {
+        this(optimizationEngine, rebalanceCalculator, costModel, null);
+    }
+
+    @Autowired
+    public OptimizationService(
+            OptimizationEngine optimizationEngine,
+            RebalanceCalculator rebalanceCalculator,
+            RebalancingCostModel costModel,
+            @Autowired(required = false) OptimizationLogRepository logRepository) {
         this.optimizationEngine = optimizationEngine;
         this.rebalanceCalculator = rebalanceCalculator;
         this.costModel = costModel;
-        this.logRepository = null;
+        this.logRepository = logRepository;
     }
 
     public OptimizationResponseDto optimizePortfolio(OptimizationRequestDto request) {

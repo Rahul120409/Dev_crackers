@@ -32,7 +32,6 @@ public class RiskEngine {
             RiskScoreService.CompositeRiskAssessment breakdown
     ) {}
 
-    @Autowired
     public RiskEngine(
             VolatilityService volatilityService,
             ConcentrationService concentrationService,

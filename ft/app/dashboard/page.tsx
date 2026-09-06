@@ -129,32 +129,38 @@ export default function DashboardPage() {
           {/* HEADER ROW */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 p-5 rounded-2xl border border-slate-800 backdrop-blur-sm">
             <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                  Executive Dashboard & Capital Health
-                </h1>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                  REAL-TIME FEEDS
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold text-white tracking-tight">Enterprise Capital & Safeguard Control</h1>
+                <span className="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  Live System
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-1">
-                Real-time capital balance, composite risk telemetry, statutory liquidity buffers, and autonomous decision logs.
+                Real-time risk monitoring, automated threshold safeguard enforcement, and mean-variance capital optimization.
               </p>
             </div>
 
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => router.push('/optimization')}
-                className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-bold rounded-lg shadow-md shadow-indigo-950/60 transition-all flex items-center gap-1.5 cursor-pointer"
+                onClick={() => router.push('/market')}
+                className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl shadow-md shadow-indigo-900/40 transition-all flex items-center gap-1.5 cursor-pointer border border-indigo-400/30"
               >
-                <Sparkles className="w-3.5 h-3.5" />
+                <Activity className="w-3.5 h-3.5 text-indigo-200" />
+                <span>Market Intelligence Live</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push('/optimization')}
+                className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 <span>Optimize Capital Book</span>
               </button>
               <button
                 type="button"
                 onClick={handleRefresh}
-                className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer transition-colors"
+                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer transition-colors"
                 title="Refresh Feeds"
               >
                 <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-indigo-400' : ''}`} />

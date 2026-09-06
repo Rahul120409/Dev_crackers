@@ -26,7 +26,6 @@ public class OptimizationController {
 
     private final OptimizationService optimizationService;
 
-    @Autowired
     public OptimizationController(OptimizationService optimizationService) {
         this.optimizationService = optimizationService;
     }

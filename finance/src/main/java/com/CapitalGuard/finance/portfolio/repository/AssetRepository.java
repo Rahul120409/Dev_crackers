@@ -2,11 +2,11 @@ package com.CapitalGuard.finance.portfolio.repository;
 
 import com.CapitalGuard.finance.portfolio.entity.AssetEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
-@Repository
-public interface AssetRepository extends JpaRepository<AssetEntity, Long> {
+public interface AssetRepository extends JpaRepository<AssetEntity, UUID> {
     Optional<AssetEntity> findByName(String name);
 }
+

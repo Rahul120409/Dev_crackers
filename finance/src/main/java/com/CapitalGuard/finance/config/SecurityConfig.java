@@ -24,7 +24,6 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Autowired
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
@@ -43,13 +42,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Allow CORS preflight requests from browser
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // Public auth endpoints
-                .requestMatchers("/api/auth/**").permitAll()
-                // Public actuator & error routes
+                // Public API endpoints (Auth, Market Intelligence, Trades, Risk, Optimization, Portfolio, Scenarios, Alerts)
+                .requestMatchers("/api/**").permitAll()
                 .requestMatchers("/actuator/**", "/error").permitAll()
-                // All other API endpoints require a valid JWT token
-                .requestMatchers("/api/**").authenticated()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

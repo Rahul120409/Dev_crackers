@@ -15,7 +15,6 @@ public class OptimizationEngine {
 
     private final ConstraintValidator constraintValidator;
 
-    @Autowired
     public OptimizationEngine(ConstraintValidator constraintValidator) {
         this.constraintValidator = constraintValidator;
     }

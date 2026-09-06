@@ -26,18 +26,19 @@ public class PortfolioService {
     private final PortfolioRepository portfolioRepository;
     private final AssetRepository assetRepository;
 
-    @Autowired(required = false)
-    private org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
-
-    @Autowired(required = false)
-    public PortfolioService(PortfolioRepository portfolioRepository, AssetRepository assetRepository) {
-        this.portfolioRepository = portfolioRepository;
-        this.assetRepository = assetRepository;
-    }
+    private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     public PortfolioService() {
-        this.portfolioRepository = null;
-        this.assetRepository = null;
+        this(null, null, null);
+    }
+
+    public PortfolioService(
+            @Autowired(required = false) PortfolioRepository portfolioRepository,
+            @Autowired(required = false) AssetRepository assetRepository,
+            @Autowired(required = false) org.springframework.jdbc.core.JdbcTemplate jdbcTemplate) {
+        this.portfolioRepository = portfolioRepository;
+        this.assetRepository = assetRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Transactional

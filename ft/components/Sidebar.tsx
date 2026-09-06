@@ -14,7 +14,8 @@ import {
   HelpCircle,
   Building,
   ChevronRight,
-  UserCheck
+  UserCheck,
+  Activity
 } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
@@ -47,6 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
   // Strict LLD Section 19.1 Sequence
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, badge: 'Live' },
+    { id: 'market', label: 'Market Intelligence', icon: Activity, badge: 'Yahoo Live' },
     { id: 'portfolio', label: 'Portfolio & Assets', icon: PieChart },
     { id: 'risk', label: 'Risk Center', icon: ShieldCheck },
     { id: 'optimization', label: 'Optimization', icon: Sparkles, badge: '1 Opp' },
@@ -107,6 +109,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
                   onClick={() => {
                     onSelectTab(item.id);
                     if (item.id === 'dashboard') router.push('/dashboard');
+                    else if (item.id === 'market') router.push('/market');
                     else if (item.id === 'portfolio') router.push('/portfolio');
                     else if (item.id === 'risk') router.push('/risk');
                     else if (item.id === 'optimization') router.push('/optimization');

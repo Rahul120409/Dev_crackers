@@ -10,6 +10,8 @@ import com.CapitalGuard.finance.service.MockPortfolioProvider;
 import com.CapitalGuard.finance.service.RiskControlService;
 import com.CapitalGuard.finance.service.RiskEngine;
 import com.CapitalGuard.finance.service.VolatilityService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +22,13 @@ import java.util.Map;
 
 /**
  * REST controller exposing risk and control engine calculations.
- * Matches LLD Section 18 & 20 REST API contract.
+ * Equipped with Market Intelligence Failsafe Fallback protection.
  */
 @RestController
 @RequestMapping("/api")
 public class RiskController {
+
+    private static final Logger log = LoggerFactory.getLogger(RiskController.class);
 
     private final MockPortfolioProvider mockProvider;
     private final RiskEngine riskEngine;
@@ -33,7 +37,6 @@ public class RiskController {
     private final LiquidityService liquidityService;
     private final RiskControlService riskControlService;
 
-    @Autowired
     public RiskController(
             MockPortfolioProvider mockProvider,
             RiskEngine riskEngine,
@@ -50,16 +53,28 @@ public class RiskController {
     }
 
     /**
-     * GET /api/risk - Returns full risk metrics overview (LLD Section 9, 18, 20).
+     * GET /api/risk - Returns full risk metrics overview.
+     * Automatically fails over to Market Intelligence Fallback if primary RiskEngine fails.
      */
     @GetMapping("/risk")
     public RiskEngine.RiskOutput getRiskMetrics() {
-        Portfolio portfolio = mockProvider.getMockPortfolio();
-        return riskEngine.evaluatePortfolio(portfolio);
+        if (riskControlService.isForceFailureSimulation()) {
+            log.warn("GET /api/risk: Simulated failure mode active. Using Market Intelligence Fallback.");
+            return riskControlService.getFallbackRiskOutput("Simulated Engine Failure");
+        }
+
+        try {
+            Portfolio portfolio = mockProvider.getMockPortfolio();
+            return riskEngine.evaluatePortfolio(portfolio);
+        } catch (Exception e) {
+            log.error("GET /api/risk failed on primary RiskEngine. Engaging Market Intelligence Fallback.", e);
+            return riskControlService.getFallbackRiskOutput(e.getMessage());
+        }
     }
 
     /**
-     * GET /api/risk/breaches - Evaluates limits and returns active breaches & control actions (LLD Section 18, 20).
+     * GET /api/risk/breaches - Evaluates limits and returns active breaches.
+     * Uses Market Intelligence fallback if primary evaluation fails.
      */
     @GetMapping("/risk/breaches")
     public BreachDetectorService.BreachEvaluation getBreaches() {
@@ -83,7 +98,7 @@ public class RiskController {
     }
 
     /**
-     * GET /api/alerts - Returns active system alerts (LLD Section 18, 20).
+     * GET /api/alerts - Returns active system alerts.
      */
     @GetMapping("/alerts")
     public List<Alert> getAlerts() {
@@ -95,9 +110,14 @@ public class RiskController {
      */
     @GetMapping("/risk/volatility")
     public Map<String, BigDecimal> getVolatility() {
-        Portfolio portfolio = mockProvider.getMockPortfolio();
-        BigDecimal vol = volatilityService.calculate(portfolio);
-        return Collections.singletonMap("volatility", vol);
+        try {
+            Portfolio portfolio = mockProvider.getMockPortfolio();
+            BigDecimal vol = volatilityService.calculate(portfolio);
+            return Collections.singletonMap("volatility", vol);
+        } catch (Exception e) {
+            log.warn("GET /api/risk/volatility failed, returning fallback volatility.");
+            return Collections.singletonMap("volatility", BigDecimal.valueOf(0.1850));
+        }
     }
 
     /**
@@ -116,5 +136,34 @@ public class RiskController {
     public LiquidityService.LiquidityReport getLiquidity() {
         Portfolio portfolio = mockProvider.getMockPortfolio();
         return liquidityService.calculate(portfolio);
+    }
+
+    /**
+     * Demo API to simulate primary RiskEngine failure and trigger Market Intelligence Fallback
+     * POST /api/risk/simulate-engine-failure?fail=true
+     */
+    @PostMapping("/risk/simulate-engine-failure")
+    public Map<String, Object> simulateEngineFailure(@RequestParam(defaultValue = "true") boolean fail) {
+        riskControlService.setForceFailureSimulation(fail);
+        log.warn("Risk Engine Failure Simulation state set to: {}", fail);
+        return Map.of(
+                "status", "SUCCESS",
+                "failureSimulationActive", fail,
+                "activeEngine", fail ? "MARKET_INTELLIGENCE_FALLBACK_SYSTEM" : "PRIMARY_RISK_ENGINE",
+                "message", fail ? "🚨 Primary Risk Engine disabled. Market Intelligence Fallback System is now handling risk detection!" : "✅ Primary Risk Engine restored."
+        );
+    }
+
+    /**
+     * GET /api/risk/failsafe-status
+     */
+    @GetMapping("/risk/failsafe-status")
+    public Map<String, Object> getFailsafeStatus() {
+        boolean isFailedOver = riskControlService.isForceFailureSimulation();
+        return Map.of(
+                "primaryRiskEngineOnline", !isFailedOver,
+                "marketIntelligenceFallbackActive", true,
+                "activeMode", isFailedOver ? "FALLBACK_MARKET_INTELLIGENCE" : "PRIMARY_RISK_ENGINE"
+        );
     }
 }

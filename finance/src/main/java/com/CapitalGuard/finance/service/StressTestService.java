@@ -26,7 +26,6 @@ public class StressTestService {
     private final AlertService alertService;
     private final DecisionLogService decisionLogService;
 
-    @Autowired
     public StressTestService(
             MockPortfolioProvider mockPortfolioProvider,
             RiskEngine riskEngine,
