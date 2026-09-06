@@ -37,16 +37,18 @@ function LoginCommandCenter() {
   const [isUnregisteredEmail, setIsUnregisteredEmail] = useState(false);
 
   useEffect(() => {
+    // Prefetch dashboard so transition is instant
+    router.prefetch('/dashboard');
+
     const registeredEmailParam = searchParams.get('registered');
     if (registeredEmailParam) {
       setEmail(registeredEmailParam);
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
 
   const handleEnterCommandCenter = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // If already granted, clicking the button proceeds to dashboard
     if (authState === 'granted') {
       router.push('/dashboard');
       return;
@@ -68,8 +70,11 @@ function LoginCommandCenter() {
         password,
       });
 
-      // Show "ACCESS GRANTED" and wait for user to click to enter
+      // Show ACCESS GRANTED and proceed directly to dashboard
       setAuthState('granted');
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 300);
     } catch (err: any) {
       setAuthState('idle');
       if (err.message && (err.message.includes('UNREGISTERED_EMAIL') || err.message.includes('not registered'))) {
@@ -97,8 +102,14 @@ function LoginCommandCenter() {
         password: 'CapitalGuard@2026',
       });
       setAuthState('granted');
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 250);
     } catch {
       setAuthState('granted');
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 250);
     }
   };
 
