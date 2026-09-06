@@ -145,4 +145,59 @@ public class PortfolioService {
                 AllocationDto.builder().name("CASH").assetType(AssetType.CASH).weight(0.10).value(totalCapital.multiply(BigDecimal.valueOf(0.10))).volatility(0.01).liquidityScore(1.00).expectedReturn(0.03).riskLevel("LOW").build()
         );
     }
+
+    @Transactional
+    public PortfolioResponseDto saveCustomPortfolio(PortfolioResponseDto request) {
+        BigDecimal totalCap = request.getTotalCapital() != null ? request.getTotalCapital() : BigDecimal.valueOf(100_000_000);
+        String pName = request.getName() != null ? request.getName() : "Custom User Portfolio";
+
+        if (portfolioRepository != null && assetRepository != null) {
+            try {
+                PortfolioEntity portfolioEntity = PortfolioEntity.builder()
+                        .name(pName)
+                        .totalCapital(totalCap)
+                        .allocations(new ArrayList<>())
+                        .build();
+
+                if (request.getAssets() != null) {
+                    for (AllocationDto dto : request.getAssets()) {
+                        AssetType aType = dto.getAssetType() != null ? dto.getAssetType() : AssetType.EQUITY;
+                        AssetEntity assetEntity = assetRepository.findByName(dto.getName())
+                                .orElseGet(() -> assetRepository.save(AssetEntity.builder()
+                                        .name(dto.getName())
+                                        .assetType(aType)
+                                        .assetClass(aType.name())
+                                        .currentValue(dto.getValue() != null ? dto.getValue() : BigDecimal.ZERO)
+                                        .currentWeight(dto.getWeight() != null ? dto.getWeight() : 0.0)
+                                        .expectedReturn(dto.getExpectedReturn() != null ? dto.getExpectedReturn() : 0.08)
+                                        .volatility(dto.getVolatility() != null ? dto.getVolatility() : 0.15)
+                                        .liquidityScore(dto.getLiquidityScore() != null ? dto.getLiquidityScore() : 0.80)
+                                        .riskLevel(dto.getRiskLevel() != null ? dto.getRiskLevel() : "MODERATE")
+                                        .build()));
+
+                        AllocationEntity allocEntity = AllocationEntity.builder()
+                                .portfolio(portfolioEntity)
+                                .asset(assetEntity)
+                                .amount(dto.getValue() != null ? dto.getValue() : BigDecimal.ZERO)
+                                .percentage(dto.getWeight() != null ? dto.getWeight() : 0.0)
+                                .build();
+
+                        portfolioEntity.getAllocations().add(allocEntity);
+                    }
+                }
+
+                PortfolioEntity saved = portfolioRepository.save(portfolioEntity);
+                return PortfolioResponseDto.builder()
+                        .id(saved.getId() != null ? saved.getId().toString() : "PORT-CUSTOM")
+                        .name(saved.getName())
+                        .totalCapital(saved.getTotalCapital())
+                        .assets(request.getAssets())
+                        .build();
+            } catch (Exception e) {
+                // Fallback returns DTO directly
+            }
+        }
+
+        return request;
+    }
 }

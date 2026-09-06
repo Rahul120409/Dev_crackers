@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../context/ThemeContext';
 import {
   Bell,
   Search,
@@ -9,7 +10,9 @@ import {
   Layers,
   Activity,
   CheckCircle2,
-  RefreshCw
+  RefreshCw,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -18,6 +21,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ onTriggerRefresh, isRefreshing = false }) => {
+  const { theme, toggleTheme } = useTheme();
   const [currentTime, setCurrentTime] = useState<string>('');
   const [selectedPortfolio, setSelectedPortfolio] = useState('Institutional Treasury Core Book (₹100 Cr)');
   const [showNotifications, setShowNotifications] = useState(false);
@@ -97,6 +101,25 @@ export const Header: React.FC<HeaderProps> = ({ onTriggerRefresh, isRefreshing =
           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
           <span>Core Engine: Nominal</span>
         </div>
+
+        {/* Theme Toggle: Light / Dark Mode with Warm Orange Accent */}
+        <button
+          onClick={toggleTheme}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer shadow-xs bg-orange-50 hover:bg-orange-100 text-orange-700 border-orange-200 dark:bg-stone-900 dark:hover:bg-stone-800 dark:text-orange-400 dark:border-stone-700"
+          title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+        >
+          {theme === 'dark' ? (
+            <>
+              <Sun className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Light Mode</span>
+            </>
+          ) : (
+            <>
+              <Moon className="w-3.5 h-3.5 text-orange-600" />
+              <span className="hidden sm:inline">Dark Mode</span>
+            </>
+          )}
+        </button>
 
         {/* Notifications */}
         <div className="relative">

@@ -26,4 +26,10 @@ public class PortfolioController {
         PortfolioResponseDto portfolio = portfolioService.getDefaultPortfolio();
         return ResponseEntity.ok(portfolio);
     }
+
+    @PostMapping("/portfolio")
+    public ResponseEntity<PortfolioResponseDto> savePortfolio(@RequestBody PortfolioResponseDto request) {
+        PortfolioResponseDto saved = portfolioService.saveCustomPortfolio(request);
+        return ResponseEntity.ok(saved);
+    }
 }

@@ -155,3 +155,67 @@ export const mockPortfolioInsight: PortfolioInsightData = {
   recommendationAction: 'Reallocate 8% (₹8 Cr) from Loans into Bonds (+3%) and Cash Liquidity (+5%).',
   targetRebalanceRoute: '/optimization',
 };
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8082';
+
+function getAuthHeaders(): HeadersInit {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json'
+  };
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token') || localStorage.getItem('capitalguard_auth_token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+  }
+  return headers;
+}
+
+export async function savePortfolioToBackend(name: string, totalCapitalCr: number, assets: AssetClassItem[]) {
+  try {
+    const payload = {
+      name,
+      totalCapital: totalCapitalCr * 10000000,
+      assets: assets.map(a => ({
+        name: a.name,
+        assetType: a.id.toUpperCase().includes('EQUITY') ? 'EQUITY' : a.id.toUpperCase().includes('BOND') ? 'GOVERNMENT_BOND' : a.id.toUpperCase().includes('CASH') ? 'CASH' : 'CORPORATE_BOND',
+        weight: a.allocationPct / 100,
+        value: a.valueCr * 10000000,
+        volatility: a.riskLevel === 'High' ? 0.22 : a.riskLevel === 'Medium' ? 0.15 : 0.05,
+        liquidityScore: a.liquidityScore,
+        expectedReturn: a.expectedReturnPct / 100,
+        riskLevel: a.riskLevel.toUpperCase()
+      }))
+    };
+
+    const res = await fetch(`${API_BASE}/api/portfolio`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      console.warn('Backend portfolio save returned status:', res.status);
+      return null;
+    }
+    return await res.json();
+  } catch (err) {
+    console.warn('Failed to save portfolio to backend, falling back to local state:', err);
+    return null;
+  }
+}
+
+export async function fetchLatestPortfolioFromBackend() {
+  try {
+    const res = await fetch(`${API_BASE}/api/portfolio`, {
+      method: 'GET',
+      headers: getAuthHeaders()
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.warn('Failed to fetch latest portfolio from backend:', err);
+    return null;
+  }
+}
+
